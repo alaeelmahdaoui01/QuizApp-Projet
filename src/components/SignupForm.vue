@@ -22,7 +22,7 @@
         displayName: "",
         email : "", 
         password: "",
-        error:""
+        error:"",
       }
     },
     methods :{
@@ -39,10 +39,11 @@
         createdAt: new Date(),
         displayName: this.displayName,
         email: this.email,
-        threads: []
+        role:"user",
+        takenQuizzes:[], 
       });
   
-      this.$router.push("/home");
+      this.$router.push("/homeuser");
     } catch (err) {
       this.error = err.message; // This will show the error in your <div class="error">{{ error }}</div>
     }

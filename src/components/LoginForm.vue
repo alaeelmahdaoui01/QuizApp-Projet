@@ -21,23 +21,41 @@
         error:""
       }
     },
-    methods :{
-      handleLogin() {
-        firebase.auth().signInWithEmailAndPassword(this.email,this.password).then(()=>{
-            this.$router.push("/home");
-            this.error="";
-            console.log(firebase.auth().currentUser.uid);
-          }).catch(err => {
-            if (err.code === 'auth/user-not-found') {
-              this.error = "No account found with this email.";
-            } else if (err.code === 'auth/wrong-password') {
-              this.error = "Incorrect password.";
-            } else {
-              this.error = err.message;
-            }
-          })
-      }
-    }
+    methods: {
+  handleLogin() {
+    firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+      .then(async (cred) => {
+        this.error = "";
+
+        // Fetch user role from Firestore
+        const userDoc = await firebase.firestore().collection('users').doc(cred.user.uid).get();
+
+        if (userDoc.exists) {
+          const role = userDoc.data().role;
+
+          if (role === "admin") {
+            this.$router.push("/homeadmin");
+          } else if (role === "user") {
+            this.$router.push("/homeuser");
+          } else {
+            this.error = "Unknown user role.";
+          }
+        } else {
+          this.error = "User data not found.";
+        }
+      })
+      .catch(err => {
+        if (err.code === 'auth/user-not-found') {
+          this.error = "No account found with this email.";
+        } else if (err.code === 'auth/wrong-password') {
+          this.error = "Incorrect password.";
+        } else {
+          this.error = err.message;
+        }
+      });
+  }
+}
+
   };
   </script>
     
