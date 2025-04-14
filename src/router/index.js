@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
+import CreateQuiz from '../components/CreateQuiz.vue'
+import HomeAdmin from '../views/HomeAdmin.vue'
 import HomeUser from '../views/HomeUser.vue'
 
 const routes = [{
@@ -17,6 +19,16 @@ const routes = [{
         path: '/homeuser',
         name: 'home user',
         component: HomeUser
+    },
+    {
+        path: '/create',
+        name: 'create',
+        component: CreateQuiz
+    },
+    {
+        path: '/homeadmin',
+        name: 'homeadmin',
+        component: HomeAdmin
     },
 ]
 
