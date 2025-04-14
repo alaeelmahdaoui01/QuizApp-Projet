@@ -2,7 +2,6 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/auth";
 
-
 const firebaseConfig = {
     apiKey: "AIzaSyAmhPGNG_RldYdJtXtLsyQoMXDLP5GOLAg",
     authDomain: "projet-quiz-3d699.firebaseapp.com",
@@ -16,4 +15,4 @@ firebase.initializeApp(firebaseConfig);
 const projectFirestore = firebase.firestore();
 const projectAuth = firebase.auth();
 
-export { projectFirestore, projectAuth };
+export { projectFirestore as db, projectAuth };  // export db as projectFirestore
