@@ -1,5 +1,4 @@
 
-
 <template>
     <NavBarAdmin :user="user" />
     <div class="create-quiz">

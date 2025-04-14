@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
-import CreateQuiz from '../components/CreateQuiz.vue'
-import HomeAdmin from '../views/HomeAdmin.vue'
-import HomeUser from '../views/HomeUser.vue'
+import CreateQuiz from '@/components/CreateQuiz.vue'
+import HomeAdmin from '@/views/HomeAdmin.vue'
+import EditView from '@/components/editView.vue';
 
 const routes = [{
         path: '/',
@@ -15,11 +15,7 @@ const routes = [{
         name: 'login',
         component: LoginView
     },
-    {
-        path: '/homeuser',
-        name: 'home user',
-        component: HomeUser
-    },
+
     {
         path: '/create',
         name: 'create',
@@ -30,6 +26,14 @@ const routes = [{
         name: 'homeadmin',
         component: HomeAdmin
     },
+
+    {
+        path: '/admin/edit/:id',
+        name: 'EditQuiz',
+        component: EditView,
+        props: true,
+    },
+
 ]
 
 const router = createRouter({

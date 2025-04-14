@@ -1,9 +1,9 @@
-import { db } from '../config'; // import db
-
-export const getQuizzes = async() => {
+import { app } from '../config'; // import db
+// In getQuiz.js
+export const getQuizzes = async(userId) => {
     try {
-        const quizCollection = db.collection('quizzes'); // Access Firestore collection
-        const quizSnapshot = await quizCollection.get();
+        const quizCollection = app.collection('quizzes');
+        const quizSnapshot = await quizCollection.where('createdBy', '==', userId).get();
         const quizzesList = quizSnapshot.docs.map(doc => ({
             id: doc.id,
             ...doc.data(),

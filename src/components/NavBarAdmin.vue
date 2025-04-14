@@ -1,4 +1,3 @@
-NavBarAdmin.vue 
 
 <template>
     <div class="navbar-container">
