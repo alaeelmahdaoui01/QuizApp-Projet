@@ -1,4 +1,4 @@
-import { projectAuth } from "@/Firebase/config"
+import { projectAuth } from "@/Firebase/config.js"
 
 const signOut = () => {
     return projectAuth.signOut().then(() => {
