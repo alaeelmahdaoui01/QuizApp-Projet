@@ -26,7 +26,6 @@
   import { getQuizzes } from '../Firebase/Firestore/getQuiz'; 
   import NavBarAdmin from '@/components/NavBarAdmin.vue';
   import { deleteQuiz } from '@/Firebase/Firestore/delete';
-import { editQuiz } from '@/Firebase/Firestore/edit';
 
   
   export default {
@@ -61,26 +60,10 @@ import { editQuiz } from '@/Firebase/Firestore/edit';
       alert('Error deleting quiz');
     }
   },
-  async editQuiz(quizId) {
-    // Example usage with dummy updated data
-    const updatedData = {
-      title: 'Updated Title',
-      difficulty: 'medium',
-      questions: [
-        {
-          question: 'What is 2 + 2?',
-          options: ['1', '2', '3', '4'],
-          answer: '4',
-        },
-      ],
-    };
-    try {
-      await editQuiz(quizId, updatedData);
-      this.fetchQuizzes(); // Refresh list after editing
-    } catch (error) {
-      alert('Error editing quiz');
-    }
-  },
+  editQuiz(quizId) {
+  this.$router.push({ name: 'EditQuiz', params: { id: quizId } });
+}
+
     },
   };
   </script>
