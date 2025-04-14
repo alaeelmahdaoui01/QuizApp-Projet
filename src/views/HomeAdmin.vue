@@ -25,6 +25,9 @@
   import { getUser } from '@/Firebase/Authentification/getUser';  // Import the getUser method
   import { getQuizzes } from '../Firebase/Firestore/getQuiz'; 
   import NavBarAdmin from '@/components/NavBarAdmin.vue';
+  import { deleteQuiz } from '@/Firebase/Firestore/delete';
+import { editQuiz } from '@/Firebase/Firestore/edit';
+
   
   export default {
     name: 'HomeAdmin',
@@ -49,14 +52,35 @@
         const quizzes = await getQuizzes(); // Fetch quizzes from Firestore
         this.quizzes = quizzes;
       },
-      editQuiz(quizId) {
-        console.log('Edit quiz', quizId);
-        // Add edit functionality here later
-      },
-      deleteQuiz(quizId) {
-        console.log('Delete quiz', quizId);
-        // Add delete functionality here later
-      },
+      
+      async deleteQuiz(quizId) {
+    try {
+      await deleteQuiz(quizId);
+      this.fetchQuizzes(); // Refresh list after deletion
+    } catch (error) {
+      alert('Error deleting quiz');
+    }
+  },
+  async editQuiz(quizId) {
+    // Example usage with dummy updated data
+    const updatedData = {
+      title: 'Updated Title',
+      difficulty: 'medium',
+      questions: [
+        {
+          question: 'What is 2 + 2?',
+          options: ['1', '2', '3', '4'],
+          answer: '4',
+        },
+      ],
+    };
+    try {
+      await editQuiz(quizId, updatedData);
+      this.fetchQuizzes(); // Refresh list after editing
+    } catch (error) {
+      alert('Error editing quiz');
+    }
+  },
     },
   };
   </script>
