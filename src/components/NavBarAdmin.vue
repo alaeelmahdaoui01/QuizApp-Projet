@@ -44,100 +44,121 @@
   </script>
   
   <style scoped>
-
-
-  .buttons-container a,.button{
-    font-weight: bold;
-  }
   .navbar-container {
-    text-align: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(30, 30, 47, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   }
   
   .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    background-color: #000000;
-    color: #fff;
-    height: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    width: 100%;
+    box-sizing: border-box;
   }
   
-  /* Ensures buttons and user menu are aligned properly */
-  .buttons-container,
-  .usermenu {
+  .brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+  
+  .brand a {
+    color: white;
+    text-decoration: none;
+    background: linear-gradient(to right, #ffffff, #c9d6ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    transition: all 0.3s ease;
+  }
+  
+  .buttons-container, .usermenu {
     display: flex;
+    gap: 1.5rem;
     align-items: center;
   }
   
-  /* Optional spacing between left buttons */
-  .buttons-container .button:not(:last-child) {
-    margin-right: 10px;
+  .button {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
   }
   
-  .usermenu {
-    gap: 10px;
+  .button:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
+  }
+  
+  .button.router-link-exact-active {
+    color: white;
+    background: linear-gradient(135deg, rgba(255, 94, 125, 0.2), rgba(255, 45, 95, 0.2));
   }
   
   .userphoto {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     object-fit: cover;
-  }
-  
-  .username {
-    text-decoration: none;
-    color: #fff;
-    font-weight: bold;
-  }
-  
-  .button {
-    padding: 10px 15px;
-    font-size: 16px;
-    border: none;
-    background-color: transparent;
-    color: #fff;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    position: relative;
-  }
-  
-  /* Adds a white underline glow on hover */
-  .button::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: 3px;
-    width: 100%;
-    height: 2px;
-    background-color: #fff;
-    transform: scaleX(0);
-    transform-origin: left;
     transition: transform 0.3s ease;
   }
   
-  .button:hover::after {
-    transform: scaleX(1);
+  .userphoto:hover {
+    transform: scale(1.1);
   }
   
-  /* Hover color + lift effect */
-  .button:hover {
-    color: #ccc;
-    transform: translateY(-2px);
+  .username {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.3s ease;
   }
   
-  
-  .button:focus {
-    outline: none;
+  .username:hover {
+    color: white;
   }
   
-  .navbar {
-    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+  /* Remove the underline effect from original design */
+  .button::after {
+    content: none;
   }
   
+  @media (max-width: 768px) {
+    .navbar {
+      padding: 1rem;
+    }
     
-    </style>
+    .brand {
+      font-size: 1.25rem;
+    }
     
-  
+    .buttons-container, .usermenu {
+      gap: 0.75rem;
+    }
+    
+    .button {
+      padding: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .userphoto {
+      width: 32px;
+      height: 32px;
+    }
+  }
+  </style>
