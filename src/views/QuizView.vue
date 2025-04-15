@@ -1,58 +1,103 @@
+
 <template>
-    <div class="home-signedin-container">
-      <NavbarSignedin :user="user" />
-      <main class="content-wrapper">
-        <div class="quiz-container" v-if="quiz">
-            <div class="quiz-header">
-                <h2>{{ quiz.title }}</h2>
-                <p class="quiz-info">Posted by <router-link :to="'/profile/' + quiz.createdBy"> {{ authorName }} </router-link></p>
-            </div>
-            
-        </div>
-      </main>
-      <div class="blur-circle pink"></div>
-      <div class="blur-circle blue"></div>
+    <div class="discussion">
+      <Quiz :quiz="mainQuiz" />
+  
+      
+  
+      <div class="reply-form">
+        
+        <button class="reply-button">Reply</button>
+      </div>
     </div>
-  </template>
+</template>
   
   <script>
-  import NavbarSignedin from "@/components/NavBarUser.vue";
-  import getQuizzes from "@/Firebase/Firestore/getQuizzes";
-  import { getUser } from "@/Firebase/Authentification/getUser.js";
-  import { app } from "@/Firebase/config";
+  import Quiz from '@/components/QuizComp.vue';
+
+  import { getUser } from '@/Firebase/Authentification/getUser';
+  import { getquiz } from '@/Firebase/Firestore/getQuizInfo.js';
+
+  
   
   export default {
-    name: "HomeSignedInView",
+    name: 'DiscussionView',
     components: {
-      NavbarSignedin,
-    },
-    async created() {
-      await this.getQuizList();
-      const user = getUser();
-      this.user = user;
-      const userDoc = await app.collection("users").doc(user.uid).get();
-      this.isAdmin = userDoc.data().role === "admin";
+      Quiz,
     },
     data() {
       return {
-        quizzes: [],
-        user: {},
+        mainQuiz: null,
+        currentUserId: getUser()?.uid || null,
       };
     },
-    
-    methods: {
-      async getQuizList() {
-        try {
-          const { quizzes, load } = getQuizzes();
-          await load();
-          this.quizzes = quizzes.value;
-          this.extractTopics();
-        } catch (error) {
-          console.log(error);
-        }
-      },
-      
+    async created() {
+      await this.loadQuiz();
     },
+    methods: {
+        async loadQuiz() {
+            console.log("Loading quiz with ID:", this.$route.params.id); // Debug 1
+            const { quiz, error, load } = getquiz(this.$route.params.id);
+            await load();
+            console.log("Quiz data:", quiz.value); // Debug 2
+            console.log("Error:", error.value); // Debug 3
+            this.mainQuiz = quiz.value;
+            },
+  
+    }
   };
   </script>
+  
+  <style scoped>
+  .discussion {
+    background-color: #fafafa;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+    padding: 20px;
+  }
+  
+  .replies {
+    margin-top: 20px;
+  }
+  
+  .replies h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #262626;
+  }
+  
+  .reply-form {
+    margin-top: 20px;
+  }
+  
+  .reply-form h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    color: #262626;
+  }
+  
+  .reply-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  
+  .reply-button {
+    background-color: rgb(245, 66, 101);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .reply-button:hover {
+    background-color: rgb(189, 28, 60);
+  }
+  </style>
   

@@ -34,4 +34,9 @@ const waitForAuthInit = () => {
     return authReady;
 }
 
-export { getUser, isLogged, waitForAuthInit, observeUserState };
+const getUserById = async(uid) => {
+    const res = await projectFirestore.collection('users').doc(uid).get();
+    return res.data();
+};
+
+export { getUser, isLogged, waitForAuthInit, observeUserState, getUserById };
