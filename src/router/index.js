@@ -5,6 +5,8 @@ import LoginView from '../views/LoginView.vue'
 import CreateQuiz from '@/components/CreateQuiz.vue'
 import HomeAdmin from '@/views/HomeAdmin.vue'
 import EditView from '@/components/editView.vue';
+import AvailableQuizzes from '../views/QuizzesView.vue';
+import CurrentQuizInfo from '../views/QuizView.vue';
 
 const routes = [{
         path: '/',
@@ -38,7 +40,17 @@ const routes = [{
         component: EditView,
         props: true,
     },
-
+    {
+        path: '/quizzes',
+        name: 'Available quizzes',
+        component: AvailableQuizzes
+    },
+    {
+        path: '/quiz/:id',
+        name: 'Quiz info',
+        component: CurrentQuizInfo,
+        props: true,
+    },
 ]
 
 const router = createRouter({

@@ -2,32 +2,30 @@
   <div class="home-signedin-container">
     <NavbarSignedin :user="user" />
     <main class="content-wrapper">
+      <div class="welcome-message">
+        <h1>Welcome to our Quiz App!</h1>
+        <p>Explore a world of quizzes designed to challenge and entertain you.</p>
+        <p v-if="quizzes.length > 0">
+          Dive into the latest quiz: <b>{{ quizzes[0].title }}</b>.
+        </p>
+      </div>
+    <br><br><br><br><br><br>
       <div class="header-panel">
-        <h2 class="section-title" v-show="!search">Trending quizzes in your feed</h2>
-        <h2 class="section-title" v-show="search">Search Results</h2>
-        <router-link 
-          to="/createquiz" 
-          v-if="isAdmin" 
-          class="cta-button create-btn"
-        >
-          Create New
-        </router-link>
+        <h2 class="section-title">Explore the latest quizzes</h2>
+
       </div>
 
       <div class="quizzes-grid">
         <router-link
-          v-for="quiz in filteredQuizzes"
+          v-for="quiz in quizzes"
           :key="quiz.id"
           :to="`/quiz/${quiz.id}`"
           class="quiz-card"
         >
           <div class="quiz-content">
             <h3 class="quiz-title">{{ quiz.title }}</h3>
-            <div class="quiz-creator">
-              {{ quiz.creatorName || 'Anonymous' }}
-            </div>
+            
             <div class="quiz-details">
-              <p class="quiz-description">{{ quiz.description }}</p>
               <div class="quiz-meta">
                 <span class="quiz-difficulty">{{ quiz.difficulty }}</span>
                 <span class="quiz-questions">{{ quiz.questions.length }} questions</span>
@@ -41,95 +39,99 @@
     <div class="blur-circle blue"></div>
   </div>
 </template>
-  
-  <script>
-  import NavbarSignedin from "@/components/NavBarUser.vue";
-  import getQuizzes from "@/Firebase/Firestore/getQuizzes";
-  import { getUser } from "@/Firebase/Authentification/getUser.js";
-  import { app } from "@/Firebase/config";
-  
-  export default {
-    name: "HomeSignedInView",
-    components: {
-      NavbarSignedin,
+ 
+
+
+<script>
+import NavbarSignedin from "@/components/NavBarUser.vue";
+import getQuizzes from "@/Firebase/Firestore/getQuizzes";
+import { getUser } from "@/Firebase/Authentification/getUser.js";
+import { app } from "@/Firebase/config";
+
+export default {
+  name: "HomeSignedInView",
+  components: {
+    NavbarSignedin,
+  },
+  async created() {
+    await this.getQuizList();
+    const user = getUser();
+    this.user = user;
+    const userDoc = await app.collection("users").doc(user.uid).get();
+    this.isAdmin = userDoc.data().role === "admin";
+  },
+  data() {
+    return {
+      quizzes: [],
+      filtered: [],
+      search: false,
+      filter: false,
+      //isAdmin: false,
+      searchbar: true,
+      user: {},
+    };
+  },
+  computed: {
+    filteredQuizzes() {
+      return this.search || this.filter ? this.filtered : this.quizzes;
     },
-    async created() {
-      await this.getQuizList();
-      const user = getUser();
-      this.user = user;
-      const userDoc = await app.collection("users").doc(user.uid).get();
-      this.isAdmin = userDoc.data().role === "admin";
+  },
+  methods: {
+    quizhover(event, quiz) {
+      const quizTitleElement = event.target.querySelector(".quiz-title");
+      quizTitleElement.innerHTML =
+        'Difficulty Level: ' + quiz.difficulty + '<br>' +
+        quiz.description + '<br>' +
+        'Number of Questions: ' + quiz.questions.length;
+      quizTitleElement.style.mixBlendMode = "normal";
+      quizTitleElement.style.textAlign = "left";
+      quizTitleElement.style.fontSize = "12px";
+      quizTitleElement.style.padding = "12px";
+
+      event.target.querySelector(".quiz-image").style.display = "none";
+      event.target.style.background = "linear-gradient(90deg, #ef42ba, #735def)";
     },
-    data() {
-      return {
-        quizzes: [],
-        filtered: [],
-        search: false,
-        filter: false,
-        isAdmin: false,
-        searchbar: true,
-        user: {},
-      };
+
+    quizregular(event, quiz) {
+      const quizTitleElement = event.target.querySelector(".quiz-title");
+      quizTitleElement.innerHTML = quiz.title;
+      quizTitleElement.style.textAlign = "center";
+      quizTitleElement.style.mixBlendMode = "difference";
+      quizTitleElement.style.fontSize = "1.5em";
+      quizTitleElement.style.padding = "0";
+
+      event.target.querySelector(".quiz-image").style.display = "block";
+      event.target.style.background = "#fefefe";
     },
-    computed: {
-      filteredQuizzes() {
-        return this.search || this.filter ? this.filtered : this.quizzes;
-      },
+
+    async getQuizList() {
+      try {
+        const { quizzes, load } = getQuizzes();
+        await load();
+        this.quizzes = quizzes.value.splice(0,3); // show the 3 latest quizzes
+      } catch (error) {
+        console.log(error);
+      }
     },
-    methods: {
-      quizhover(event, quiz) {
-        const quizTitleElement = event.target.querySelector(".quiz-title");
-        quizTitleElement.innerHTML =
-          'Difficulty Level: ' + quiz.difficulty + '<br>' +
-          quiz.description + '<br>' +
-          'Number of Questions: ' + quiz.questions.length;
-        quizTitleElement.style.mixBlendMode = "normal";
-        quizTitleElement.style.textAlign = "left";
-        quizTitleElement.style.fontSize = "12px";
-        quizTitleElement.style.padding = "12px";
-  
-        event.target.querySelector(".quiz-image").style.display = "none";
-        event.target.style.background = "linear-gradient(90deg, #ef42ba, #735def)";
-      },
-  
-      quizregular(event, quiz) {
-        const quizTitleElement = event.target.querySelector(".quiz-title");
-        quizTitleElement.innerHTML = quiz.title;
-        quizTitleElement.style.textAlign = "center";
-        quizTitleElement.style.mixBlendMode = "difference";
-        quizTitleElement.style.fontSize = "1.5em";
-        quizTitleElement.style.padding = "0";
-  
-        event.target.querySelector(".quiz-image").style.display = "block";
-        event.target.style.background = "#fefefe";
-      },
-  
-      async getQuizList() {
-        try {
-          const { quizzes, load } = getQuizzes();
-          await load();
-          this.quizzes = quizzes.value;
-        } catch (error) {
-          console.log(error);
-        }
-      },
-  
-      handleSearch(filtered_quizzes) {
-        this.search = true;
-        this.filtered = filtered_quizzes;
-      },
-  
-      handleFilter(filtered_quizzes) {
-        this.filter = true;
-        this.filtered = filtered_quizzes;
-      },
+
+    handleSearch(filtered_quizzes) {
+      this.search = true;
+      this.filtered = filtered_quizzes;
     },
-  };
-  </script>
+
+    handleFilter(filtered_quizzes) {
+      this.filter = true;
+      this.filtered = filtered_quizzes;
+    },
+  },
+};
+</script>
   
  
   
   <style scoped>
+
+
   .home-signedin-container {
     position: relative;
     min-height: 100vh;
@@ -360,4 +362,24 @@
       padding: 1.25rem;
     }
   }
+
+  .welcome-message {
+  text-align: center;
+  z-index: 1;
+  max-width: 800px;
+  margin-bottom: 2rem;
+  margin-left: 260px
+}
+
+.welcome-message h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.welcome-message p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
   </style>
