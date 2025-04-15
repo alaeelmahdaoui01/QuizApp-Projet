@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import HomeUser from '../views/HomeUser.vue'
 import LoginView from '../views/LoginView.vue'
 import CreateQuiz from '@/components/CreateQuiz.vue'
 import HomeAdmin from '@/views/HomeAdmin.vue'
@@ -26,7 +27,11 @@ const routes = [{
         name: 'homeadmin',
         component: HomeAdmin
     },
-
+    {
+        path: '/homeuser',
+        name: 'homeuser',
+        component: HomeUser
+    },
     {
         path: '/admin/edit/:id',
         name: 'EditQuiz',

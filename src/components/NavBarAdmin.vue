@@ -31,7 +31,7 @@
     },
     data() {
       return {
-        defaultPhoto: "https://www.example.com/default-avatar.jpg"  // Fallback image if photoURL is not available
+        defaultPhoto: "https://th.bing.com/th/id/OIP.DQdhyRifE5tywz-uIlBKUAHaHa?rs=1&pid=ImgDetMain"  // Fallback image if photoURL is not available
       };
     },
     methods: {

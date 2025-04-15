@@ -1,29 +1,41 @@
-
 <template>
-    <NavBarAdmin :user="user" />
-    <div class="create-quiz">
-      <h2>Create Quiz from API</h2>
-  
-      <label>Category:</label>
-      <select v-model="selectedCategory">
-        <option v-for="(id, name) in categories" :key="id" :value="name">{{ name }}</option>
-      </select>
-  
-      <label>Difficulty:</label>
-      <select v-model="difficulty">
-        <option>easy</option>
-        <option>medium</option>
-        <option>hard</option>
-      </select>
-  
-      <label>Number of Questions:</label>
-      <input v-model.number="amount" type="number" min="1" max="50" />
-  
-      <label>Quiz Title:</label>
-      <input v-model="quizTitle" type="text" placeholder="Quiz title" />
-  
-      <button @click="createQuiz">Import and Save Quiz</button>
-      <p v-if="message">{{ message }}</p>
+    <div class="create-quiz-container">
+      <NavBarAdmin :user="user" />
+      <main class="content-wrapper">
+        <div class="form-container">
+          <h2>Create Quiz from API</h2>
+          
+          <div class="form-group">
+            <label>Category:</label>
+            <select v-model="selectedCategory" class="form-input">
+              <option v-for="(id, name) in categories" :key="id" :value="name">{{ name }}</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Difficulty:</label>
+            <select v-model="difficulty" class="form-input">
+              <option>easy</option>
+              <option>medium</option>
+              <option>hard</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Number of Questions:</label>
+            <input v-model.number="amount" type="number" min="1" max="50" class="form-input" />
+          </div>
+          
+          <div class="form-group">
+            <label>Quiz Title:</label>
+            <input v-model="quizTitle" type="text" placeholder="Quiz title" class="form-input" />
+          </div>
+          
+          <button @click="createQuiz" class="cta-button">Import and Save Quiz</button>
+          <p v-if="message" class="message">{{ message }}</p>
+        </div>
+      </main>
+      <div class="blur-circle"></div>
     </div>
   </template>
   
@@ -32,6 +44,7 @@
   import 'firebase/firestore';
   import 'firebase/auth';
   import NavBarAdmin from '@/components/NavBarAdmin.vue';
+  import { getUser , waitForAuthInit } from '@/Firebase/Authentification/getUser';
 
   
   export default {
@@ -41,6 +54,7 @@
     },
     data() {
       return {
+        user : "",
         selectedCategory: "Computers",
         difficulty: "easy",
         amount: 10,
@@ -60,6 +74,23 @@
         }
       };
     },
+    async created() {
+        try {
+          await waitForAuthInit();
+          this.user = getUser();
+          
+          if (!this.user) {
+            console.warn('User not authenticated');
+            // Redirect to login if needed
+            this.$router.push('/login');
+            return;
+          }
+          
+          await this.fetchQuizzes();
+        } catch (error) {
+          console.error('Error in HomeAdmin created hook:', error);
+        }
+      },
     methods: {
       async createQuiz() {
         this.message = "";
@@ -125,32 +156,166 @@
     }
   };
   </script>
-  
+
+
   <style scoped>
-  .create-quiz {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    max-width: 400px;
-    margin: 2rem auto;
+  .create-quiz-container {
+    position: relative;
+    min-height: 100vh;
+    background-color: #1e1e2f;
+    color: white;
+    overflow: hidden;
   }
   
-  input, select, button {
+  .content-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 2rem 2rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .form-container {
+    max-width: 600px;
+    margin: 0 auto;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    padding: 2.5rem;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+  
+  h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    background: linear-gradient(to right, #ffffff, #c9d6ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-align: center;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+
+  .form-group input {
+    width : 570px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 0.875rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .form-input:focus {
+    border-color: rgba(92, 157, 237, 0.5);
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(92, 157, 237, 0.2);
+  }
+  
+  .form-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .cta-button {
+    display: block;
+    width: 100%;
+    background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
+    color: white;
+    padding: 0.875rem;
+    font-size: 1.125rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+    box-shadow: 0 4px 15px rgba(255, 45, 95, 0.3);
+  }
+  
+  .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 45, 95, 0.4);
+  }
+  
+  .message {
+    text-align: center;
+    margin-top: 1.5rem;
     padding: 0.75rem;
     border-radius: 8px;
-    border: 1px solid #ccc;
+    font-size: 0.95rem;
   }
   
-  button {
-    background-color: #4CAF50;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
+  .message {
+    color: #ff5e7d;
   }
   
-  button:hover {
-    background-color: #45a049;
+  .blur-circle {
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(100, 108, 255, 0.2), transparent 70%);
+    filter: blur(80px);
+    bottom: 20%;
+    right: 10%;
+    z-index: 0;
+    animation: float 15s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(50px, 50px);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .content-wrapper {
+      padding: 100px 1.5rem 1.5rem;
+    }
+    
+    .form-container {
+      padding: 1.5rem;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+    
+    .blur-circle {
+      width: 300px;
+      height: 300px;
+      filter: blur(60px);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .form-container {
+      padding: 1.25rem;
+    }
+    
+    .form-group {
+      margin-bottom: 1rem;
+    }
   }
   </style>
-  
+
+
+ 

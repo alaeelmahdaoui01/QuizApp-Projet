@@ -1,35 +1,46 @@
 <template>
+  <div class="home-signedin-container">
     <NavbarSignedin :user="user" />
-    <div class="home-container">
-      <div class="home-panel">
-        <h2 class="home-title" v-show="!search">Trending quizzes in your feed</h2>
-        <h2 class="home-title" v-show="search">Search Results</h2>
-        <router-link to="/createquiz" v-if="isAdmin" class="create-form-btn">Create New</router-link>
-      </div>
-      <div class="quizzes-container">
-        <router-link
-            v-for="quiz in filteredQuizzes"
-            :key="quiz.id"
-            :to="`/quiz/${quiz.id}`"
-            class="quiz-card"
+    <main class="content-wrapper">
+      <div class="header-panel">
+        <h2 class="section-title" v-show="!search">Trending quizzes in your feed</h2>
+        <h2 class="section-title" v-show="search">Search Results</h2>
+        <router-link 
+          to="/createquiz" 
+          v-if="isAdmin" 
+          class="cta-button create-btn"
         >
-            <div class="quiz-content">
-                <div class="quiz-title" v-html="quiz.title"></div>
-                <div class="quiz-creator">Created by {{ quiz.creatorName || 'Anonymous' }}</div>
-                <div class="quiz-details">
-                    {{ quiz.description }}<br />
-                    <div class="quiz-stats">
-                        <span>Difficulty: {{ quiz.difficulty }}</span>
-                        <span>Questions: {{ quiz.questions.length }}</span>
-                    </div>
-                </div>
-            </div>
+          Create New
         </router-link>
-
       </div>
-      <div class="blur-circle"></div>
-    </div>
-  </template>
+
+      <div class="quizzes-grid">
+        <router-link
+          v-for="quiz in filteredQuizzes"
+          :key="quiz.id"
+          :to="`/quiz/${quiz.id}`"
+          class="quiz-card"
+        >
+          <div class="quiz-content">
+            <h3 class="quiz-title">{{ quiz.title }}</h3>
+            <div class="quiz-creator">
+              {{ quiz.creatorName || 'Anonymous' }}
+            </div>
+            <div class="quiz-details">
+              <p class="quiz-description">{{ quiz.description }}</p>
+              <div class="quiz-meta">
+                <span class="quiz-difficulty">{{ quiz.difficulty }}</span>
+                <span class="quiz-questions">{{ quiz.questions.length }} questions</span>
+              </div>
+            </div>
+          </div>
+        </router-link>
+      </div>
+    </main>
+    <div class="blur-circle pink"></div>
+    <div class="blur-circle blue"></div>
+  </div>
+</template>
   
   <script>
   import NavbarSignedin from "@/components/NavBarUser.vue";
@@ -116,170 +127,237 @@
   };
   </script>
   
-
+ 
+  
   <style scoped>
-.home-container {
-  position: relative;
-  min-height: 100vh;
-  background: #1a1a2e;
-  color: white;
-  padding-top: 80px;
-  overflow-x: hidden;
-}
-
-.home-panel {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 2rem 5%;
-  max-width: 1400px;
-  margin: 0 auto;
-}
-
-.home-title {
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(90deg, #ff8a00, #e52e71);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 2px 10px rgba(229, 46, 113, 0.3);
-}
-
-.create-form-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 0.8rem 1.8rem;
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 50px;
-  border: none;
-  text-decoration: none;
-  box-shadow: 0 4px 15px rgba(118, 75, 162, 0.4);
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-}
-
-.create-form-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(118, 75, 162, 0.6);
-}
-
-.quizzes-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 2rem;
-  padding: 2rem 5%;
-  max-width: 1400px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-}
-
-.quiz-card {
-  background: #16213e;
-  border-radius: 20px;
-  overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  height: 340px; /* Increased height for creator info */
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.quiz-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-}
-
-.quiz-content {
-  padding: 1.5rem;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-.quiz-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: white;
-  transition: all 0.3s ease;
-  line-height: 1.4;
-}
-
-.quiz-creator {
-  font-size: 0.85rem;
-  color: rgba(255, 255, 255, 0.6);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-}
-
-.quiz-creator::before {
-  content: "👤";
-  margin-right: 6px;
-  font-size: 0.9rem;
-}
-
-.quiz-details {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.7);
-  line-height: 1.6;
-  margin-top: auto;
-}
-
-.quiz-stats {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 1rem;
-  font-size: 0.8rem;
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.quiz-image {
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 0 0 20px 20px;
-  transition: all 0.4s ease;
-}
-
-.blur-circle {
-  position: absolute;
-  width: 500px;
-  height: 500px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(102, 126, 234, 0.15), transparent 70%);
-  filter: blur(80px);
-  top: 20%;
-  left: 10%;
-  z-index: 0;
-  animation: float 12s ease-in-out infinite alternate;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .home-panel {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
+  .home-signedin-container {
+    position: relative;
+    min-height: 100vh;
+    background-color: #1e1e2f;
+    color: white;
+    overflow: hidden;
   }
-
-  .quizzes-container {
-    grid-template-columns: 1fr;
-    padding: 1.5rem;
+  
+  .content-wrapper {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 100px 2rem 2rem;
+    width: 100%;
+    box-sizing: border-box;
   }
-
+  
+  .header-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 0 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+    background: linear-gradient(to right, #ff8a8a, #ff2d5f);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-shadow: 0 2px 10px rgba(255, 45, 95, 0.3);
+  }
+  
+  .cta-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
+    color: white;
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    text-decoration: none;
+    box-shadow: 0 4px 15px rgba(255, 45, 95, 0.3);
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .cta-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 45, 95, 0.4);
+    background: linear-gradient(135deg, #ff2d5f 0%, #ff5e7d 100%);
+  }
+  
+  .quizzes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 0 1rem;
+  }
+  
   .quiz-card {
-    height: 300px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    overflow: hidden;
   }
+  
+  .quiz-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(to bottom, #ff5e7d, #ff2d5f);
+    transition: all 0.3s ease;
+  }
+  
+  .quiz-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 8px 25px rgba(255, 45, 95, 0.2);
+    border-color: rgba(255, 94, 125, 0.3);
+  }
+  
+  .quiz-card:hover::before {
+    width: 6px;
+  }
+  
+  .quiz-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  
+  .quiz-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+    color: white;
+    position: relative;
+    padding-left: 1rem;
+  }
+  
+  .quiz-title::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 6px;
+    height: 6px;
+    background: #ff5e7d;
+    border-radius: 50%;
+  }
+
+  .quiz-title::before {
+  content: none; /* Simplement masquer le point */
 }
-</style>
+  
+  .quiz-creator {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 1rem;
+  }
+  
+  .quiz-details {
+    margin-top: auto;
+  }
+  
+  .quiz-description {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+  }
+  
+  .quiz-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .quiz-difficulty {
+    color: #ff8a8a;
+  }
+  
+  .quiz-questions {
+    color: #8a8aff;
+  }
+  
+  .blur-circle {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    filter: blur(80px);
+    z-index: 0;
+    animation: float 15s ease-in-out infinite;
+  }
+  
+  .blur-circle.pink {
+    background: radial-gradient(circle, rgba(255, 94, 125, 0.2), transparent 70%);
+    top: 20%;
+    left: 10%;
+  }
+  
+  .blur-circle.blue {
+    background: radial-gradient(circle, rgba(100, 108, 255, 0.2), transparent 70%);
+    bottom: 10%;
+    right: 10%;
+    animation-delay: 2s;
+    animation-direction: reverse;
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(50px, 50px);
+    }
+  }
+  
+  @media (max-width: 992px) {
+    .quizzes-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .content-wrapper {
+      padding: 100px 1.5rem 1.5rem;
+    }
+    
+    .header-panel {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+    }
+    
+    .blur-circle {
+      width: 300px;
+      height: 300px;
+      filter: blur(60px);
+    }
+  }
+  
+  @media (max-width: 576px) {
+    .quizzes-grid {
+      grid-template-columns: 1fr;
+    }
+    
+    .quiz-card {
+      padding: 1.25rem;
+    }
+  }
+  </style>
