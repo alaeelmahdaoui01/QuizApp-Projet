@@ -12,9 +12,7 @@
             </button>
             
             <Quiz :quiz="mainQuiz" />
-            <div class="reply-form">
-                <button class="reply-button">Start Quiz</button>
-            </div>
+            
             
             <!-- Leaderboard Section -->
             <div class="leaderboard">

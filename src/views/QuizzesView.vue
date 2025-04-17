@@ -24,7 +24,7 @@
           <router-link
             v-for="quiz in filteredQuizzes"
             :key="quiz.id"
-            :to="`/quizviewtry/${quiz.id}`"
+            :to="`/quiz/${quiz.id}`"
             class="quiz-card"
           >
             <div class="quiz-content">

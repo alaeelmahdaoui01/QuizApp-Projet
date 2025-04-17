@@ -7,6 +7,7 @@ import HomeAdmin from '@/views/HomeAdmin.vue'
 import EditView from '@/components/editView.vue';
 import AvailableQuizzes from '../views/QuizzesView.vue';
 import CurrentQuizInfo from '../views/QuizView.vue';
+import QuizQsts from '@/views/QuizQsts.vue';
 
 const routes = [{
         path: '/',
@@ -51,6 +52,12 @@ const routes = [{
         component: CurrentQuizInfo,
         props: true,
     },
+    {
+        path: '/quizpass/:id',
+        name: 'QuizQsts',
+        component: QuizQsts,
+        props: true,
+    }
 ]
 
 const router = createRouter({

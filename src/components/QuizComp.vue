@@ -14,10 +14,17 @@
         <p><strong>Topic:</strong> {{ quiz.topic }}</p>
         <p><strong>Difficulty:</strong> {{ quiz.difficulty }}</p>
       </div>
+
+      <div class="passquiz">
+                <router-link :to="`/quizpass/${quiz.id}`" class="quiz-card">
+                    <button class="start-btn">Start Quiz</button> </router-link>
+        </div>
     </div>
     <div v-else class="loading-message">
       Loading quiz data...
     </div>
+
+    
   </template>
   
   <script>
@@ -119,10 +126,12 @@ import { getUser } from "@/Firebase/Authentification/getUser.js";
 }
 
 .thread-content {
-  margin-top: 1.5rem;
+    margin-top: 50px;
+
 }
 
 .thread-content p {
+
   margin-bottom: 0.8rem;
   color: rgba(255, 255, 255, 0.8);
 }
@@ -137,7 +146,17 @@ import { getUser } from "@/Firebase/Authentification/getUser.js";
   color: rgba(255, 255, 255, 0.6);
   font-size: 1.1rem;
 }
-
+.start-btn {
+    background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
+    color: white;
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
 .quiz-info {
   margin-bottom: 1.5rem;
 }
@@ -163,5 +182,8 @@ import { getUser } from "@/Firebase/Authentification/getUser.js";
     flex-direction: column;
     gap: 0.5rem;
   }
+}
+.passquiz{
+    margin-top : 40px
 }
 </style>
