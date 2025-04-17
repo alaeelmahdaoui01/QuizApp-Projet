@@ -3,10 +3,11 @@
       <div class="thread-header">
         <h2>{{ quiz.title }}</h2>
         <p class="thread-info">
-          Posted by <router-link :to="'/profile/' + quiz.createdBy">
-            {{ quiz.createdBy || 'Loading...' }}
-          </router-link>
+            Posted by <router-link :to="'/profile/' + quiz.createdBy">
+                {{ quiz.createdBy || 'Loading...' }}
+            </router-link>
         </p>
+
       </div>
       <div class="thread-content">
         <p> <strong>Time of creation: </strong>{{ formattedDate }}</p>
@@ -30,6 +31,7 @@
   <script>
 
 import { getUser } from "@/Firebase/Authentification/getUser.js";
+import { getUserById } from "@/Firebase/Authentification/getUser.js";
 
   export default {
     name: 'QuizComp',
@@ -45,16 +47,15 @@ import { getUser } from "@/Firebase/Authentification/getUser.js";
 
     },
     async mounted() {
-      if (this.quiz?.createdBy) {
-        try {
-          const user = await this.getuser(this.quiz.createdBy);
-          this.authorName = user?.displayName || 'Anonymous';
-        } catch (error) {
-          console.error('Error fetching author:', error);
-          this.authorName = 'Unknown';
-        }
-      }
+            try {
+            const userData = await getUserById(this.quiz.createdBy);
+            this.authorName = userData?.name || userData?.displayName || 'Anonymous';
+            } catch (error) {
+            console.error('Error fetching author:', error);
+            this.authorName = 'Unknown';
+            }
     },
+
     methods: {
       async getuser(id) {
         const response = await fetch(`/api/users/${id}`); // Adjust to your actual API endpoint

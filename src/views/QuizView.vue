@@ -22,17 +22,17 @@
                         <span>Rank</span>
                         <span>Player</span>
                         <span>Score</span>
-                        <span>Time</span>
                     </div>
                     <div class="leaderboard-item" v-for="(player, index) in leaderboard" :key="player.id">
                         <span class="rank">{{ index + 1 }}</span>
                         <span class="player">
-                            <img :src="player.avatar" alt="Player avatar" class="avatar">
-                            {{ player.name }}
+                            
+                            <router-link :to="`/profile/${player.userId}`">{{ player.email }}</router-link>
                         </span>
+                        
                         <span class="score">{{ player.score }}/{{ maxScore }}</span>
-                        <span class="time">{{ player.time }}s</span>
                     </div>
+
                 </div>
             </div>
             
@@ -43,6 +43,7 @@
 </template>
 
 <script>
+import { getUserById } from '@/Firebase/Authentification/getUser';
 import Quiz from '@/components/QuizComp.vue';
 import { getUser } from '@/Firebase/Authentification/getUser';
 import { getquiz } from '@/Firebase/Firestore/getQuizInfo.js';
@@ -57,13 +58,7 @@ export default {
             mainQuiz: null,
             currentUserId: getUser()?.uid || null,
             user: {},
-            leaderboard: [
-                { id: 1, name: "QuizMaster", score: 10},
-                { id: 2, name: "TriviaKing", score: 9},
-                { id: 3, name: "Brainiac", score: 9 },
-                { id: 4, name: "KnowItAll", score: 8},
-                { id: 5, name: "CuriousCat", score: 8},
-            ],
+            leaderboard: [],
             maxScore: 10
         };
     },
@@ -81,9 +76,28 @@ export default {
             console.log("Quiz data:", quiz.value);
             console.log("Error:", error.value);
             this.mainQuiz = quiz.value;
+
             // Set max score based on quiz questions count
             if (quiz.value && quiz.value.questions) {
                 this.maxScore = quiz.value.questions.length;
+            }
+
+            // Load leaderboard from participants + enrich with user info
+            if (quiz.value && quiz.value.participants) {
+                const enrichedParticipants = await Promise.all(
+                    quiz.value.participants.map(async (p) => {
+                        const userData = await getUserById(p.userId);
+                        return {
+                            ...p,
+                            ...userData
+                        };
+                    })
+                );
+
+                this.leaderboard = enrichedParticipants.sort((a, b) => {
+                    if (b.score !== a.score) return b.score - a.score;
+                    return a.time - b.time;
+                });
             }
         },
         goToHome() {

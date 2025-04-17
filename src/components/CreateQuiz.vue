@@ -96,7 +96,7 @@
         this.message = "";
   
         try {
-          const user = firebase.auth().currentUser;
+          const user = getUser();
           if (!user) {
             this.message = "You must be logged in.";
             return;
@@ -124,6 +124,7 @@
             title: this.quizTitle || "Untitled Quiz",
             topic: this.selectedCategory,
             difficulty: this.difficulty,
+            adminemail: user.email,
             createdBy: user.uid,
             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
             questions: data.results.map(q => ({

@@ -5,6 +5,7 @@
         <div v-if="loading">Loading quiz...</div>
 
         <div v-else-if="alreadyTaken">
+            <h1>OOPS...</h1>
             <p>You have already taken this quiz!</p>
             <button @click="goBack" class="reset-btn">Go back to Home page</button>
         </div>
@@ -250,6 +251,7 @@
                     const userRef = db.collection("users").doc(currentUser.uid);
                     await userRef.update({
                     quizzes: firebase.firestore.FieldValue.arrayUnion({
+                        //quizname : quiz.title, 
                         quizId: this.id,
                         ...quizResult
                     }),
