@@ -9,7 +9,8 @@
         </p>
       </div>
       <div class="thread-content">
-        <!-- Add quiz content here -->
+        <p> <strong>Time of creation: </strong>{{ formattedDate }}</p>
+        <p> <strong>Number of questions: </strong>{{ questionCount }} questions</p>
         <p><strong>Topic:</strong> {{ quiz.topic }}</p>
         <p><strong>Difficulty:</strong> {{ quiz.difficulty }}</p>
       </div>
@@ -58,7 +59,26 @@ import { getUser } from "@/Firebase/Authentification/getUser.js";
         type: Object,
         required: true
       }
+    },
+    computed: {
+    formattedDate() {
+      if (!this.quiz.createdAt) return 'Recently created';
+      
+      const date = this.quiz.createdAt.toDate(); // If using Firebase Timestamp
+      // const date = new Date(this.quiz.createdAt); // If using ISO string
+      
+      return new Intl.DateTimeFormat('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      }).format(date);
+    },
+    questionCount() {
+      return this.quiz.questions?.length || 0;
     }
+  }
   };
   </script>
 
@@ -116,5 +136,32 @@ import { getUser } from "@/Firebase/Authentification/getUser.js";
   padding: 2rem;
   color: rgba(255, 255, 255, 0.6);
   font-size: 1.1rem;
+}
+
+.quiz-info {
+  margin-bottom: 1.5rem;
+}
+
+.quiz-meta {
+  display: flex;
+  gap: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.created-at::before {
+  content: "📅 ";
+}
+
+.questions-count::before {
+  content: "❓ ";
+}
+
+@media (max-width: 768px) {
+  .quiz-meta {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
 </style>
