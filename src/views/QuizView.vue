@@ -27,7 +27,7 @@
                         <span class="rank">{{ index + 1 }}</span>
                         <span class="player">
                             
-                            <router-link :to="`/profile/${player.userId}`">{{ player.email }}</router-link>
+                            <router-link :to="`/profile/${player.userId}`">{{ player.displayName }}</router-link>
                         </span>
                         
                         <span class="score">{{ player.score }}/{{ maxScore }}</span>
@@ -121,6 +121,7 @@ export default {
     margin: 0 auto;
     padding: 0 2rem;
     position: relative;
+    padding-bottom : 30px
 }
 
 .home-button {
@@ -141,6 +142,7 @@ export default {
     transition: all 0.3s ease;
     cursor: pointer;
     z-index: 10;
+    margin-left : 15px
 }
 
 .home-button:hover {
@@ -229,6 +231,7 @@ export default {
         filter: blur(60px);
     }
 }
+/* Leaderboard specific styles */
 .leaderboard {
     max-width: 800px;
     margin: 2rem auto;
@@ -239,7 +242,7 @@ export default {
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     z-index: 1;
-    margin-bottom : 50px;
+    margin-bottom: 50px;
 }
 
 .leaderboard h2 {
@@ -251,7 +254,7 @@ export default {
 
 .leaderboard-header {
     display: grid;
-    grid-template-columns: 60px 1fr 80px 80px;
+    grid-template-columns: 60px 1fr 80px;
     padding: 0.5rem 1rem;
     font-weight: bold;
     color: rgba(255, 255, 255, 0.7);
@@ -259,10 +262,9 @@ export default {
     margin-bottom: 0.5rem;
 }
 
-
 .leaderboard-item {
     display: grid;
-    grid-template-columns: 60px 1fr 80px 80px;
+    grid-template-columns: 60px 1fr 80px;
     align-items: center;
     padding: 0.8rem 1rem;
     background: rgba(255, 255, 255, 0.03);
@@ -286,11 +288,15 @@ export default {
     gap: 10px;
 }
 
-.avatar {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
+.player a {
+    color: #fff;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.player a:hover {
+    color: #ff5e7d;
+    text-decoration: underline;
 }
 
 .score {
@@ -298,19 +304,16 @@ export default {
     color: #4caf50;
 }
 
-.time {
-    text-align: right;
-    color: #2196f3;
-}
-
 /* Medal colors for top 3 */
-.leaderboard-item:nth-child(1) .rank {
+.leaderboard-list > .leaderboard-item:nth-child(2) .rank { /* First item after header */
     color: gold;
 }
-.leaderboard-item:nth-child(2) .rank {
+
+.leaderboard-list > .leaderboard-item:nth-child(3) .rank {
     color: silver;
 }
-.leaderboard-item:nth-child(3) .rank {
+
+.leaderboard-list > .leaderboard-item:nth-child(4) .rank {
     color: #cd7f32; /* bronze */
 }
 
@@ -321,14 +324,14 @@ export default {
     
     .leaderboard-header,
     .leaderboard-item {
-        grid-template-columns: 40px 1fr 60px 60px;
+        grid-template-columns: 40px 1fr 60px;
         padding: 0.5rem;
         font-size: 0.9rem;
     }
     
-    .avatar {
-        width: 25px;
-        height: 25px;
+    .leaderboard h2 {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
     }
 }
 </style>

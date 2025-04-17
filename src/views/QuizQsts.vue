@@ -287,49 +287,106 @@
 
 
 <style>
-  /* Main container styling */
-  .quiz-app-container {
-    position: relative;
-    min-height: 100vh;
-    background-color: #1e1e2f;
-    color: white;
-    overflow: hidden;
-    padding: 100px 2rem 2rem;
-    box-sizing: border-box;
-  }
-  .summary {
-  margin-top: 2rem;
-  text-align: left;
-  background: rgba(255, 255, 255, 0.1);
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-.summary ul {
-  list-style: none;
-  padding: 0;
-}
-
-.summary li {
-  margin-bottom: 1rem;
-}
-
-.correct {
-  color: #4caf50; /* Green */
-  font-weight: bold;
-}
-
-.incorrect {
-  color: #f44336; /* Red */
-  font-weight: bold;
-}
-
-/* Next Question button styling */
-.next-btn {
-  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+ /* Main container styling */
+.quiz-app-container {
+  position: relative;
+  min-height: 100vh;
+  background-color: #1e1e2f;
   color: white;
-  padding: 1rem 2.5rem;
+  padding: 100px 2rem 4rem; /* Increased bottom padding */
+  box-sizing: border-box;
+}
+
+/* Quiz container */
+.quiz-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Question box */
+.question-box {
+  margin-bottom: 2rem;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.question-header h3 {
+  margin: 0;
   font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.timer {
+  font-size: 1rem;
+  color: #ff5e7d;
+  font-weight: 500;
+}
+
+.question {
+  font-size: 1.3rem;
+  line-height: 1.5;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+/* Options grid */
+.options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.options button {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: white;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.options button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.options .selected {
+  background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
+  border-color: transparent;
+  box-shadow: 0 4px 15px rgba(255, 45, 95, 0.3);
+}
+
+/* Buttons */
+.validate-btn,
+.next-btn,
+.reset-btn {
+  display: block;
+  width: 100%;
+  max-width: 300px;
+  margin: 1.5rem auto 0;
+  padding: 1rem;
+  font-size: 1.1rem;
   font-weight: 500;
   border-radius: 8px;
   border: none;
@@ -337,204 +394,199 @@
   transition: all 0.3s ease;
 }
 
-.next-btn:hover {
+.validate-btn {
+  background: linear-gradient(135deg, #8a8aff 0%, #5757ff 100%);
+  color: white;
+}
+
+.validate-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4);
+}
+
+.validate-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.next-btn {
+  background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+  color: white;
+}
+
+.next-btn:hover {
   background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
+  transform: translateY(-2px);
 }
 
-/* Hide feedback message until answered */
+.reset-btn {
+  background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
+  color: white;
+  margin-top: 2rem;
+}
+
+.reset-btn:hover {
+  background: linear-gradient(135deg, #ff2d5f 0%, #ff5e7d 100%);
+  transform: translateY(-2px);
+}
+
+/* Feedback section */
 .answer-feedback {
-  margin-top: 1rem;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
   text-align: center;
 }
 
-  /* Container for quiz content */
+.correct-feedback {
+  color: #4caf50;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.incorrect-feedback {
+  color: #f44336;
+  font-size: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
+
+.correct-answer {
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 1.5rem;
+}
+
+/* Results section */
+.results {
+  text-align: center;
+}
+
+.results h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: #ff5e7d;
+}
+
+.results p {
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.summary {
+  margin: 2rem 0;
+  text-align: left;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.summary h3 {
+  margin-top: 0;
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 0.5rem;
+}
+
+.summary ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.summary li {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.summary li:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.summary strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.user-answer.correct {
+  color: #4caf50;
+}
+
+.user-answer.incorrect {
+  color: #f44336;
+}
+
+.correct-answer-label {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Already taken section */
+.already-taken {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.already-taken h1 {
+  color: #ff5e7d;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.already-taken p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .quiz-app-container {
+    padding: 80px 1.5rem 3rem;
+  }
+  
   .quiz-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    padding: 1.5rem;
   }
-
-  /* Intro section styling */
-  .intro {
-    text-align: center;
-  }
-
-  .start-btn {
-    background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
-    color: white;
-    padding: 1rem 2.5rem;
-    font-size: 1.2rem;
-    font-weight: 500;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  .answer-feedback {
-  margin-top: 1rem;
-  text-align: center;
-}
-
-.correct {
-  color: #4caf50; /* Green for correct answer */
-  font-weight: bold;
-}
-
-.incorrect {
-  color: #f44336; /* Red for incorrect answer */
-  font-weight: bold;
-}
-
-  .start-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 45, 95, 0.4);
-    background: linear-gradient(135deg, #ff2d5f 0%, #ff5e7d 100%);
-  }
-
-  /* Question box styling */
-  .question-box {
-    margin-bottom: 2rem;
-  }
-
-  .question-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-
-  .timer {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-  }
-
-  .question {
-    font-size: 1.25rem;
-    margin-bottom: 1.5rem;
-    color: white;
-  }
-
-  /* Options button grid */
+  
   .options {
-    display: flex; /* Change grid to flex */
-    flex-wrap: wrap; /* Allow wrapping of options */
-    justify-content: center; /* Center buttons horizontally */
-    align-items: center; /* Center buttons vertically */
-    gap: 1rem; /* Maintain space between buttons */
-    margin-bottom: 1.5rem;
-    }
-
-  .options button {
-    padding: 0.875rem 1.5rem;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
+    grid-template-columns: 1fr;
   }
-
-  .options button:hover {
-    background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
-    box-shadow: 0 4px 15px rgba(255, 45, 95, 0.3);
-  }
-
-  /* Selected option styling */
-  .options .selected {
-    background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
-    color: white;
-  }
-
-  /* Validate button styling */
-  .validate-btn {
-    background: linear-gradient(135deg, #8a8aff 0%, #5757ff 100%);
-    color: white;
-    padding: 0.875rem 2rem;
-    font-size: 1rem;
-    font-weight: 500;
-    border-radius: 8px;
-    text-decoration: none;
-    box-shadow: 0 4px 15px rgba(100, 108, 255, 0.3);
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-  }
-
-  .validate-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4);
-  }
-
-  /* Results screen styling */
-  .results {
-    text-align: center;
-    margin-top: 2rem;
-  }
-
-  .results h2 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #ff5e7d;
-  }
-
-  .results p {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-  }
-
-  .reset-btn {
-    background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
-    color: white;
-    padding: 1rem 2.5rem;
+  
+  .question {
     font-size: 1.2rem;
-    font-weight: 500;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
   }
-
-  .reset-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 45, 95, 0.4);
-    background: linear-gradient(135deg, #ff2d5f 0%, #ff5e7d 100%);
+  
+  .results h2 {
+    font-size: 1.8rem;
   }
-
-  /* Responsive Design */
-  @media (max-width: 992px) {
-    .options {
-      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    }
+  
+  .validate-btn,
+  .next-btn,
+  .reset-btn {
+    font-size: 1rem;
+    padding: 0.9rem;
   }
+}
 
-  @media (max-width: 768px) {
-    .quiz-container {
-      padding: 1.5rem;
-    }
-
-    .start-btn,
-    .validate-btn,
-    .reset-btn {
-      font-size: 1rem;
-      padding: 0.75rem 2rem;
-    }
+@media (max-width: 480px) {
+  .quiz-app-container {
+    padding: 70px 1rem 2rem;
   }
-
-  @media (max-width: 576px) {
-    .options {
-      grid-template-columns: 1fr;
-    }
-
-    .options button {
-      padding: 0.75rem;
-      font-size: 0.9rem;
-    }
+  
+  .question-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
   }
+  
+  .timer {
+    align-self: flex-end;
+  }
+}
 </style>
