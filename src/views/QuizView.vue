@@ -1,18 +1,21 @@
 
 <template>
-    <div class="discussion">
-      <Quiz :quiz="mainQuiz" />
-  
-      
-  
-      <div class="reply-form">
-        
-        <button class="reply-button">Reply</button>
-      </div>
+    <div class="quiz">
+        <div class="home-signedin-container">
+            
+            <Quiz :quiz="mainQuiz" />
+            <div class="reply-form">
+                <button class="reply-button">Start Quiz</button>
+            </div>
+            <div class="blur-circle pink"></div>
+            <div class="blur-circle blue"></div>
+        </div>
     </div>
 </template>
   
   <script>
+
+ 
   import Quiz from '@/components/QuizComp.vue';
 
   import { getUser } from '@/Firebase/Authentification/getUser';
@@ -24,15 +27,20 @@
     name: 'DiscussionView',
     components: {
       Quiz,
+   
     },
     data() {
       return {
         mainQuiz: null,
         currentUserId: getUser()?.uid || null,
+        user:{}
       };
     },
     async created() {
       await this.loadQuiz();
+      const user = getUser();
+      this.user = user;
+      console.log(user);
     },
     methods: {
         async loadQuiz() {
@@ -49,55 +57,96 @@
   </script>
   
   <style scoped>
-  .discussion {
-    background-color: #fafafa;
-    border: 1px solid #dbdbdb;
-    border-radius: 5px;
-    padding: 20px;
+.quiz {
+  position: relative;
+  min-height: 100vh;
+  padding-top: 100px;
+  background-color: #1e1e2f;
+  color: white;
+}
+
+.discussion {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.reply-form {
+  max-width: 800px;
+  margin: 2rem auto;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.reply-button {
+  background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
+  color: white;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 50px;
+  border: none;
+  text-decoration: none;
+  box-shadow: 0 4px 15px rgba(255, 45, 95, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.reply-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(255, 45, 95, 0.4);
+}
+
+.blur-circle {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  filter: blur(80px);
+  z-index: 0;
+  opacity: 0.6;
+}
+
+.blur-circle.pink {
+  background: radial-gradient(circle, rgba(255, 110, 199, 0.3), transparent 70%);
+  top: 20%;
+  left: 10%;
+  animation: float 15s ease-in-out infinite;
+}
+
+.blur-circle.blue {
+  background: radial-gradient(circle, rgba(100, 108, 255, 0.3), transparent 70%);
+  bottom: 10%;
+  right: 10%;
+  animation: float 18s ease-in-out infinite reverse;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate(0, 0);
   }
-  
-  .replies {
-    margin-top: 20px;
+  50% {
+    transform: translate(30px, 30px);
   }
-  
-  .replies h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #262626;
-  }
-  
+}
+
+@media (max-width: 768px) {
+  .discussion,
   .reply-form {
-    margin-top: 20px;
+    padding: 1.5rem;
   }
   
-  .reply-form h3 {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #262626;
+  .thread-header h2 {
+    font-size: 1.5rem;
   }
   
-  .reply-input {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #dbdbdb;
-    border-radius: 5px;
-    font-size: 16px;
-    margin-bottom: 10px;
+  .blur-circle {
+    width: 300px;
+    height: 300px;
+    filter: blur(60px);
   }
-  
-  .reply-button {
-    background-color: rgb(245, 66, 101);
-    color: #fff;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-  }
-  
-  .reply-button:hover {
-    background-color: rgb(189, 28, 60);
-  }
-  </style>
-  
+}
+</style>

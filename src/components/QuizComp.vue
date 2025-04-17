@@ -1,38 +1,56 @@
 <template>
     <div class="thread-container" v-if="quiz">
-      <div v-if="authorName" class="thread-header">
+      <div class="thread-header">
         <h2>{{ quiz.title }}</h2>
-        <p class="thread-info">Posted by <router-link :to="'/profile/' + quiz.createdBy"> {{ authorName }} </router-link></p>
+        <p class="thread-info">
+          Posted by <router-link :to="'/profile/' + quiz.createdBy">
+            {{ quiz.createdBy || 'Loading...' }}
+          </router-link>
+        </p>
       </div>
       <div class="thread-content">
-        
+        <!-- Add quiz content here -->
+        <p><strong>Topic:</strong> {{ quiz.topic }}</p>
+        <p><strong>Difficulty:</strong> {{ quiz.difficulty }}</p>
       </div>
+    </div>
+    <div v-else class="loading-message">
+      Loading quiz data...
     </div>
   </template>
   
   <script>
-  import { getUserById } from '@/Firebase/Authentification/getUser';
+
+import { getUser } from "@/Firebase/Authentification/getUser.js";
+
   export default {
-    name: 'SingleThread',
+    name: 'QuizComp',
     data() {
       return {
-        authorName: ''
+        user:{},
+        //authorName: ''
       };
     },
     async created() {
-      if (this.quiz && this.quiz.createdBy) {
+      const user = getUser();
+      this.user = user;
+
+    },
+    async mounted() {
+      if (this.quiz?.createdBy) {
         try {
-          const name = await this.getuser(this.quiz.createdBy);
-          this.authorName = name;
+          const user = await this.getuser(this.quiz.createdBy);
+          this.authorName = user?.displayName || 'Anonymous';
         } catch (error) {
-          console.error('Error fetching author name:', error);
+          console.error('Error fetching author:', error);
+          this.authorName = 'Unknown';
         }
       }
     },
     methods: {
       async getuser(id) {
-        const user = await getUserById(id);
-        return user.displayName;
+        const response = await fetch(`/api/users/${id}`); // Adjust to your actual API endpoint
+        return response.json();
       }
     },
     props: {
@@ -44,28 +62,59 @@
   };
   </script>
 
-  
 <style scoped>
 .thread-container {
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 20px;
+  background: rgba(46, 46, 72, 0.8);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 }
 
-.thread-header {
-  margin-bottom: 10px;
-}
 .thread-header h2 {
-    margin: 0;
-  }
-  
-  .thread-info {
-    font-size: 14px;
-    color: #888;
-  }
-  
-  .thread-content {
-    margin-bottom: 15px;
-  }
-  </style>
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(to right, #ffffff, #c9d6ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.thread-info {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 1.5rem;
+}
+
+.thread-info a {
+  color: #8a8aff;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.thread-info a:hover {
+  color: #a2a2ff;
+}
+
+.thread-content {
+  margin-top: 1.5rem;
+}
+
+.thread-content p {
+  margin-bottom: 0.8rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.thread-content strong {
+  color: #ff8a8a;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+}
+</style>

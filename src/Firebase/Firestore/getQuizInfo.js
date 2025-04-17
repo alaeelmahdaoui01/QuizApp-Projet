@@ -24,7 +24,7 @@ const getquiz = (id) => {
 }
 
 const getQuizzesByIds = (ids) => {
-    const posts = ref([]);
+    const quizzes = ref([]);
     const error = ref(null);
 
     const load = async() => {

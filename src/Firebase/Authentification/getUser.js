@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import { auth } from "@/Firebase/config";
+import { app } from "@/Firebase/config";
 
 const user = ref(auth.currentUser);
 let authInitialized = false;
@@ -35,7 +36,7 @@ const waitForAuthInit = () => {
 }
 
 const getUserById = async(uid) => {
-    const res = await projectFirestore.collection('users').doc(uid).get();
+    const res = await app.collection('users').doc(uid).get();
     return res.data();
 };
 
