@@ -2,88 +2,131 @@
 
 <template>
     <div id="quiz-app" class="quiz-app-container">
-  <div v-if="loading">Loading quiz...</div>
+        <div v-if="loading">Loading quiz...</div>
 
-  <div v-else-if="!quizData.length">
-    <p>Quiz not found or no questions available!</p>
-  </div>
+        <div v-else-if="alreadyTaken">
+            <p>You have already taken this quiz!</p>
+            <button @click="goBack" class="reset-btn">Go back to Home page</button>
+        </div>
 
-  <div v-else>
+        <div v-else-if="!quizData.length">
+            <p>Quiz not found or no questions available!</p>
+        </div>
     
 
-    <div class="quiz-container">
-      <div v-if="currentQuestion < quizData.length" class="question-box">
-        <div class="question-header">
-          <h3>Question {{ currentQuestion + 1 }}/{{ quizData.length }}</h3>
-          <p class="timer">Time left: {{ timer }}</p>
+        <div v-else>
+            <div class="quiz-container">
+
+
+                <div v-if="currentQuestion < quizData.length" class="question-box">
+                    <div class="question-header">
+                        <h3>Question {{ currentQuestion + 1 }}/{{ quizData.length }}</h3>
+                        <p class="timer">Time left: {{ timer }}</p>
+                    </div>
+                
+                    <!-- Hide question, options, and validate button if answered -->
+                    <p v-if="!isAnswered" class="question">{{ currentQuestionData.question }}</p>
+
+                    <div v-if="!isAnswered" class="options">
+                        <button 
+                            v-for="(option, index) in currentQuestionData.options" 
+                            :key="index" 
+                            @click="selectOption(option)" 
+                            :class="{'selected': selectedOption === option}"
+                        >
+                            {{ option }}
+                        </button>
+                    </div>
+
+                    <button 
+                    v-if="!isAnswered" 
+                    @click="validateAnswer" 
+                    :disabled="!selectedOption" 
+                    class="validate-btn"
+                    >
+                    Validate
+                    </button>
+
+                    <!-- Feedback Message (only show after answering) -->
+                    <div v-if="isAnswered" class="answer-feedback">
+                        <p v-if="isAnswerCorrect" class="correct">Correct!</p>
+                        <p v-else class="incorrect">Incorrect! The correct answer was: {{ correctAnswer }}</p>
+                        <button @click="nextQuestion" class="next-btn">Next Question</button>
+                    </div>
+                </div>
+
+
+
+
+
+                <div v-else class="results">
+                    <h2>Quiz Completed!</h2>
+                    <p>Your Score: {{ score }}/{{ quizData.length }}</p>
+                    <div class="summary">
+                        <h3>Summary:</h3>
+                        <ul>
+                            <li v-for="(answer, index) in userAnswers" :key="index">
+                                <p><strong>Question {{ index + 1 }}:</strong> {{ answer.question }}</p>
+                                <p>
+                                <span :class="{'correct': answer.isCorrect, 'incorrect': !answer.isCorrect}">
+                                    Your Answer: {{ answer.givenAnswer }} 
+                                    ({{ answer.isCorrect ? 'Correct' : 'Incorrect' }})
+                                </span>
+                                </p>
+                                <p v-if="!answer.isCorrect">Correct Answer: {{ answer.correctAnswer }}</p>
+                            </li>
+                        </ul>
+                    </div>
+                    <button @click="goBack" class="reset-btn">Go back to Home page</button>
+                </div>
+
+
+            </div>
         </div>
-        
-        <!-- Hide question, options, and validate button if answered -->
-        <p v-if="!isAnswered" class="question">{{ currentQuestionData.question }}</p>
-
-        <div v-if="!isAnswered" class="options">
-          <button 
-            v-for="(option, index) in currentQuestionData.options" 
-            :key="index" 
-            @click="selectOption(option)" 
-            :class="{'selected': selectedOption === option}"
-          >
-            {{ option }}
-          </button>
-        </div>
-
-        <button 
-          v-if="!isAnswered" 
-          @click="validateAnswer" 
-          :disabled="!selectedOption" 
-          class="validate-btn"
-        >
-          Validate
-        </button>
-
-        <!-- Feedback Message (only show after answering) -->
-        <div v-if="isAnswered" class="answer-feedback">
-          <p v-if="isAnswerCorrect" class="correct">Correct!</p>
-          <p v-else class="incorrect">Incorrect! The correct answer was: {{ correctAnswer }}</p>
-          <button @click="nextQuestion" class="next-btn">Next Question</button>
-        </div>
-      </div>
-
-        <div v-else class="results">
-            <h2>Quiz Completed!</h2>
-            <p>Your Score: {{ score }}/{{ quizData.length }}</p>
-            
-            <div class="summary">
-                <h3>Summary:</h3>
-                <ul>
-                <li v-for="(answer, index) in userAnswers" :key="index">
-                    <p><strong>Question {{ index + 1 }}:</strong> {{ answer.question }}</p>
-                    <p>
-                    <span :class="{'correct': answer.isCorrect, 'incorrect': !answer.isCorrect}">
-                        Your Answer: {{ answer.givenAnswer }} 
-                        ({{ answer.isCorrect ? 'Correct' : 'Incorrect' }})
-                    </span>
-                    </p>
-                    <p v-if="!answer.isCorrect">Correct Answer: {{ answer.correctAnswer }}</p>
-                </li>
-                </ul>
-        </div>
-  
-  <button @click="goBack" class="reset-btn">Go back to Home page</button>
-</div>
-
+    
     </div>
-  </div>
-</div>
 
-  </template>
+</template>
   
-  <script>
+
+
+<script>
+
+  import firebase from "firebase/app";
+  import "firebase/firestore"; // make sure this is imported
   import { app as db } from "@/Firebase/config.js";
 
   import { getUser } from "@/Firebase/Authentification/getUser.js";
   
   export default {
+    async mounted() {
+            const currentUser = getUser();
+            if (!currentUser) {
+                console.error("User not authenticated.");
+                this.loading = false;
+                return;
+            }
+
+            try {
+                const userRef = db.collection("users").doc(currentUser.uid);
+                const userSnap = await userRef.get();
+                const userData = userSnap.data();
+
+                const alreadyPassed = userData.quizzes?.some(q => q.quizId === this.id);
+                if (alreadyPassed) {
+                    this.alreadyTaken = true;
+                    this.loading = false;
+                    this.quizData = []; // Empty the quiz to show "Quiz not found"
+                    //alert("You have already taken this quiz.");
+                    return;
+                }
+
+                await this.fetchQuizData();
+            } catch (error) {
+                console.error("Error checking quiz attempt:", error);
+                this.loading = false;
+            }
+},
     props: {
       id: {
         type: String,
@@ -106,6 +149,7 @@
             isAnswered: false,
             startTime: null,
             endTime: null,
+            alreadyTaken: false,
         };
     },
     methods: {
@@ -184,14 +228,6 @@
             },
             goBack() {
                 this.$router.push('/homeuser');
-                //this.currentQuestion = 0;
-                //this.score = 0;
-                //this.selectedOption = null;
-                //this.userAnswers = []; // Reset user answers
-                //this.isAnswerCorrect = null;
-                //this.isAnswered = false;
-                //this.quizStarted = false;
-                //clearInterval(this.timerInterval);
             },
             async saveUserQuizResult() {
                 try {
@@ -201,41 +237,36 @@
                     return;
                     }
 
+                    const duration = Math.floor((this.endTime - this.startTime) / 1000); // seconds
+                    const quizResult = {
+                    userId: currentUser.uid,
+                    score: this.score,
+                    total: this.quizData.length,
+                    timeSpent: duration,
+                    date: new Date().toISOString(),
+                    };
+
+                    // 1. Save to user's document
                     const userRef = db.collection("users").doc(currentUser.uid);
-                    const userDoc = await userRef.get();
-
-                    if (!userDoc.exists) {
-                    console.error("User document not found.");
-                    return;
-                    }
-
-                    const userData = userDoc.data();
-                    const existingQuizzes = userData.quizzes || [];
-
-                    // Vérifie si ce quiz a déjà été enregistré
-                    const alreadySaved = existingQuizzes.some(q => q.quizId === this.id);
-                    if (alreadySaved) {
-                    console.log("Quiz already saved. Skipping duplicate.");
-                    return;
-                    }
-
-                    const duration = Math.floor((this.endTime - this.startTime) / 1000); // temps en secondes
-
                     await userRef.update({
-                    quizzes: db.FieldValue.arrayUnion({
+                    quizzes: firebase.firestore.FieldValue.arrayUnion({
                         quizId: this.id,
-                        score: this.score,
-                        total: this.quizData.length,
-                        timeSpent: duration,
-                        date: new Date().toISOString()
-                    })
+                        ...quizResult
+                    }),
                     });
 
-                    console.log("Quiz result saved successfully.");
+                    // 2. Save to quiz's document (add participant)
+                    const quizRef = db.collection("quizzes").doc(this.id);
+                    await quizRef.set({
+                    participants: firebase.firestore.FieldValue.arrayUnion(quizResult)
+                    }, { merge: true });
+
+                    console.log("✅ Quiz result saved to both user and quiz documents.");
                 } catch (error) {
-                    console.error("Error saving quiz result:", error);
+                    console.error("❌ Error saving quiz result:", error);
                 }
                 }
+
 
 
             },
@@ -244,9 +275,7 @@
                     return this.quizData[this.currentQuestion];
                 },
             },
-            async mounted() {
-                await this.fetchQuizData();
-            },
+
             beforeUnmount() {
                 clearInterval(this.timerInterval);
             },

@@ -58,11 +58,11 @@ export default {
             currentUserId: getUser()?.uid || null,
             user: {},
             leaderboard: [
-                { id: 1, name: "QuizMaster", score: 10, time: 45, avatar: "https://i.pravatar.cc/40?img=1" },
-                { id: 2, name: "TriviaKing", score: 9, time: 52, avatar: "https://i.pravatar.cc/40?img=2" },
-                { id: 3, name: "Brainiac", score: 9, time: 58, avatar: "https://i.pravatar.cc/40?img=3" },
-                { id: 4, name: "KnowItAll", score: 8, time: 42, avatar: "https://i.pravatar.cc/40?img=4" },
-                { id: 5, name: "CuriousCat", score: 8, time: 65, avatar: "https://i.pravatar.cc/40?img=5" },
+                { id: 1, name: "QuizMaster", score: 10},
+                { id: 2, name: "TriviaKing", score: 9},
+                { id: 3, name: "Brainiac", score: 9 },
+                { id: 4, name: "KnowItAll", score: 8},
+                { id: 5, name: "CuriousCat", score: 8},
             ],
             maxScore: 10
         };
