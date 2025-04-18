@@ -21,6 +21,8 @@
   </template>
   
   <script>
+  import NavbarSignedin from "@/components/NavBarUser.vue";
+  import { getUser } from "@/Firebase/Authentification/getUser.js";
   import firebase from 'firebase/app';
   import 'firebase/firestore';
   
@@ -30,6 +32,13 @@
       return {
         allUsers: []
       };
+    },
+    async created() {
+        const user = getUser();
+        this.user = user;
+    },
+    components: {
+        NavbarSignedin,
     },
     async mounted() {
       const usersRef = firebase.firestore().collection("users");
