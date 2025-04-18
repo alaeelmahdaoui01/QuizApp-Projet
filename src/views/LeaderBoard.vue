@@ -2,38 +2,32 @@
     <div class="home-signedin-container">
       <main class="content-wrapper">
         <div class="header-panel">
-            <button class="home-button" @click="goToHome">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="19" y1="12" x2="5" y2="12"></line>
-                    <polyline points="12 19 5 12 12 5"></polyline>
-                </svg>
-                Return to Home page
-            </button>
+          <button class="home-button" @click="goToHome">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Return to Home page
+          </button>
           <h2 class="section-title">🏆 Quiz Leaderboard</h2>
         </div>
   
-        <div class="leaderboard-container">
-          <table class="leaderboard-table">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Player</th>
-                <th>Total Score</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(user, index) in allUsers" :key="user.uid">
-               
-                <td>{{ index + 1 }}</td>
-                <td>
-                  <router-link :to="`/profile/${user.uid}`" class="user-link">
-                    {{ user.displayName }}
-                  </router-link>
-                </td>
-                <td>{{ user.totalScore }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <!-- Leaderboard Section -->
+        <div class="leaderboard">
+          <div class="leaderboard-header">
+            <span>Rank</span>
+            <span>Player</span>
+            <span>Score</span>
+          </div>
+          <div class="leaderboard-item" v-for="(user, index) in allUsers" :key="user.uid">
+            <span class="rank">{{ index + 1 }}</span>
+            <span class="player">
+              <router-link :to="`/profile/${user.uid}`" class="user-link">
+                {{ user.displayName }}
+              </router-link>
+            </span>
+            <span class="score">{{ user.totalScore }}</span>
+          </div>
         </div>
       </main>
       <div class="blur-circle pink"></div>
@@ -41,9 +35,10 @@
     </div>
   </template>
   
+  
   <script>
 
-  import { getUser } from "@/Firebase/Authentification/getUser.js";
+  //import { getUser } from "@/Firebase/Authentification/getUser.js";
   import firebase from 'firebase/app';
   import 'firebase/firestore';
   
@@ -142,129 +137,172 @@
     transform: translateX(-3px);
   }
   
-  .leaderboard-container {
-    background: rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(10px);
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 2rem;
-    margin: 0 auto;
+  /* Leaderboard container */
+.leaderboard-container {
     max-width: 800px;
+    margin: 2rem auto 50px auto;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
-    overflow: hidden;
-  }
-  
-  .leaderboard-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 4px;
-    height: 100%;
-    background: linear-gradient(to bottom, #ff5e7d, #ff2d5f);
-  }
-  
-  .leaderboard-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .leaderboard-table th {
-    background-color: rgba(40, 40, 70, 0.7);
-    padding: 1rem;
-    text-align: left;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-  }
-  
-  .leaderboard-table td {
-    padding: 1rem;
+    z-index: 1;
+}
+
+/* Section title */
+.section-title {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #fff;
+    font-size: 1.5rem;
+}
+
+/* Header panel (return button + title) */
+.header-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.home-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.home-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Leaderboard header row */
+.leaderboard-header {
+    display: grid;
+    grid-template-columns: 60px 1fr 80px;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.7);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.8);
-  }
-  
-  .leaderboard-table tr:last-child td {
-    border-bottom: none;
-  }
-  
-  .leaderboard-table tr:hover td {
-    background-color: rgba(255, 255, 255, 0.05);
-    color: white;
-  }
-  
-  .user-link {
-    color: inherit;
+    margin-bottom: 0.5rem;
+}
+
+/* Leaderboard list wrapper */
+.leaderboard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+/* Each leaderboard row */
+.leaderboard-item {
+    display: grid;
+    grid-template-columns: 60px 1fr 80px;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.leaderboard-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Rank style */
+.rank {
+    font-weight: bold;
+    color: #ff5e7d;
+}
+
+/* Player name & link */
+.player {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.player a {
+    color: #fff;
     text-decoration: none;
-    transition: color 0.3s ease;
-  }
-  
-  .user-link:hover {
-    color: #ff8a8a;
-  }
-  
-  .blur-circle {
+    transition: color 0.2s ease;
+}
+
+.player a:hover {
+    color: #ff5e7d;
+    text-decoration: underline;
+}
+
+/* Score styling */
+.score {
+    text-align: right;
+    color: #4caf50;
+}
+
+/* Medal colors for top 3 */
+.leaderboard-item:nth-child(1) .rank {
+    color: gold;
+}
+
+.leaderboard-item:nth-child(2) .rank {
+    color: silver;
+}
+
+.leaderboard-item:nth-child(3) .rank {
+    color: #cd7f32;
+}
+
+/* Blur background circles */
+.blur-circle {
     position: absolute;
-    width: 500px;
-    height: 500px;
     border-radius: 50%;
-    filter: blur(80px);
+    filter: blur(100px);
+    opacity: 0.6;
     z-index: 0;
-    animation: float 15s ease-in-out infinite;
-  }
-  
-  .blur-circle.pink {
-    background: radial-gradient(circle, rgba(255, 94, 125, 0.2), transparent 70%);
-    top: 20%;
-    left: 10%;
-  }
-  
-  .blur-circle.blue {
-    background: radial-gradient(circle, rgba(100, 108, 255, 0.2), transparent 70%);
-    bottom: 10%;
-    right: 10%;
-    animation-delay: 2s;
-    animation-direction: reverse;
-  }
-  
-  @keyframes float {
-    0%, 100% {
-      transform: translate(0, 0);
-    }
-    50% {
-      transform: translate(50px, 50px);
-    }
-  }
-  
-  @media (max-width: 768px) {
-    .content-wrapper {
-      padding: 100px 1.5rem 1.5rem;
-    }
-    
-    .header-panel {
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-      padding-top: 1rem;
-    }
-    
-    .home-button {
-      position: relative;
-      left: auto;
-      margin-bottom: 1rem;
-    }
-    
-    .section-title {
-      font-size: 1.5rem;
-      text-align: center;
-    }
-    
+}
+
+.blur-circle.pink {
+    width: 200px;
+    height: 200px;
+    background-color: #ff5e7d;
+    top: -50px;
+    right: -50px;
+}
+
+.blur-circle.blue {
+    width: 200px;
+    height: 200px;
+    background-color: #5ecbff;
+    bottom: -50px;
+    left: -50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
     .leaderboard-container {
-      padding: 1rem;
+        padding: 1rem;
     }
-    
-    .leaderboard-table th,
-    .leaderboard-table td {
-      padding: 0.75rem;
+
+    .leaderboard-header,
+    .leaderboard-item {
+        grid-template-columns: 40px 1fr 60px;
+        padding: 0.5rem;
+        font-size: 0.9rem;
     }
-  }
+
+    .section-title {
+        font-size: 1.3rem;
+        margin-bottom: 1rem;
+    }
+}
+
   </style>
