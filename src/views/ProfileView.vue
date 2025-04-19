@@ -79,6 +79,7 @@
         updatedEmail: '',
         showUpdateForm: false,
         isCurrent: false,
+        currentUserId:null, 
         userId : this.$route.params.id,
       };
     },

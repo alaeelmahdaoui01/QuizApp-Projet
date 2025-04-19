@@ -15,8 +15,8 @@
           <p>Email: <span class="profile-detail">{{ user.email }}</span></p>
           <p>Creation Time: <span class="profile-detail">{{ formattedDate(user.createdAt) }}</span></p>
 
-          <div class="update-profile">
-          <button @click="toggleUpdateForm" class="update-button">Update Profile</button>
+          <div class="update-profile" v-if="currentUserId === userId">
+            <button @click="toggleUpdateForm" class="update-button">Update Profile</button>
   
           <div v-if="showUpdateForm" class="update-form">
             <div class="form-group">
@@ -61,7 +61,8 @@
         updatedName: '',
         updatedEmail: '',
         showUpdateForm: false,
-        //quizNames: {},
+        currentUserId:null, 
+        userId : this.$route.params.id,
       };
     },
     methods: {
@@ -119,6 +120,7 @@
       try {
         const userId = this.$route.params.id;
         this.user = await getUserById(userId);
+        this.currentUserId = getCurrentUserId();
         if (this.user) {
           if (this.user.createdAt?.toDate) {
             this.user.createdAt = this.user.createdAt.toDate();
