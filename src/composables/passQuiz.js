@@ -78,7 +78,7 @@ function showQuestion(index) {
     document.getElementById('q2').textContent = question.question;
 
     const options = document.querySelectorAll('.choices button');
-    
+
     if (question.type === "boolean") {
         // Show only two buttons for True/False questions
         options[0].style.display = 'block';
@@ -103,12 +103,12 @@ function startTimer() {
     clearInterval(timerInterval);
     let timeLeft = 10;
     const timerElement = document.getElementById("compteur");
-    
+
     timerElement.textContent = timeLeft;
     timerInterval = setInterval(() => {
         timeLeft--;
         timerElement.textContent = timeLeft;
-        
+
         if (timeLeft <= 0) {
             clearInterval(timerInterval);
             validateAnswer();
@@ -120,7 +120,7 @@ function validateAnswer() {
     clearInterval(timerInterval);
     const selected = document.querySelector(`.choices button[style*=${couleur}]`);
     userAnswers[currentQuestion] = selected ? selected.textContent : null;
-    
+
     if (selected && selected.textContent === correctAnswers[currentQuestion]) {
         score++;
     }
@@ -144,7 +144,7 @@ function endQuiz() {
 // Initialize answer selection
 document.querySelectorAll('.choices button').forEach(btn => {
     btn.addEventListener('click', function() {
-        document.querySelectorAll('.choices button').forEach(b => 
+        document.querySelectorAll('.choices button').forEach(b =>
             b.style.backgroundColor = '');
         this.style.backgroundColor = couleur;
     });

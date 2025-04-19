@@ -5,7 +5,11 @@ import LoginView from '../views/LoginView.vue'
 import CreateQuiz from '@/components/CreateQuiz.vue'
 import HomeAdmin from '@/views/HomeAdmin.vue'
 import EditView from '@/components/editView.vue';
+import AvailableQuizzes from '../views/QuizzesView.vue';
+import CurrentQuizInfo from '../views/QuizView.vue';
 import QuizQsts from '@/views/QuizQsts.vue';
+import Leaderboard from '@/views/LeaderBoard.vue';
+import ProfileView from '@/views/ProfileView.vue';
 
 const routes = [{
         path: '/',
@@ -40,9 +44,31 @@ const routes = [{
         props: true,
     },
     {
+        path: '/quizzes',
+        name: 'Available quizzes',
+        component: AvailableQuizzes
+    },
+    {
         path: '/quiz/:id',
+        name: 'Quiz info',
+        component: CurrentQuizInfo,
+        props: true,
+    },
+    {
+        path: '/quizpass/:id',
         name: 'QuizQsts',
         component: QuizQsts,
+        props: true,
+    },
+    {
+        path: '/leaderboard',
+        name: 'Leaderboard',
+        component: Leaderboard
+    },
+    {
+        path: '/profile/:id',
+        name: 'Profile',
+        component: ProfileView,
         props: true,
     }
 ]
