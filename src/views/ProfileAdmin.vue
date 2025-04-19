@@ -15,7 +15,7 @@
           <p>Email: <span class="profile-detail">{{ user.email }}</span></p>
           <p>Creation Time: <span class="profile-detail">{{ formattedDate(user.createdAt) }}</span></p>
 
-          <div class="update-profile" v-if="currentUserId === userId">
+          <div class="update-profile" >
             <button @click="toggleUpdateForm" class="update-button">Update Profile</button>
   
           <div v-if="showUpdateForm" class="update-form">
@@ -46,7 +46,7 @@
   
   <script>
   //import ListThread from '@/components/DiscussionList.vue';
-    import { getUserById, updateUserProfile } from '@/Firebase/Authentification/getUser';
+    import { getUserById, updateUserProfile, getCurrentUserId } from '@/Firebase/Authentification/getUser';
   //import { getThreadsByIds } from '@/Firebase/firestore/getDisc.js';
     import { getDoc, doc } from 'firebase/firestore';
     import { app as db } from '@/Firebase/config.js'; // adjust the path if needed
@@ -121,6 +121,7 @@
         const userId = this.$route.params.id;
         this.user = await getUserById(userId);
         this.currentUserId = getCurrentUserId();
+        console.log(userId)
         if (this.user) {
           if (this.user.createdAt?.toDate) {
             this.user.createdAt = this.user.createdAt.toDate();
