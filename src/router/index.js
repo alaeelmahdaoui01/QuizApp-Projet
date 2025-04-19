@@ -9,6 +9,7 @@ import AvailableQuizzes from '../views/QuizzesView.vue';
 import CurrentQuizInfo from '../views/QuizView.vue';
 import QuizQsts from '@/views/QuizQsts.vue';
 import Leaderboard from '@/views/LeaderBoard.vue';
+import ProfileView from '@/views/ProfileView.vue';
 
 const routes = [{
         path: '/',
@@ -63,6 +64,12 @@ const routes = [{
         path: '/leaderboard',
         name: 'Leaderboard',
         component: Leaderboard
+    },
+    {
+        path: '/profile/:id',
+        name: 'Profile',
+        component: ProfileView,
+        props: true,
     }
 ]
 

@@ -8,7 +8,7 @@
                     <line x1="19" y1="12" x2="5" y2="12"></line>
                     <polyline points="12 19 5 12 12 5"></polyline>
                 </svg>
-                Return to Home page
+                Return
             </button>
             
             <Quiz :quiz="mainQuiz" />
@@ -101,8 +101,12 @@ export default {
             }
         },
         goToHome() {
-            this.$router.push('/homeuser');
-        }
+  if (window.history.length > 1) {
+    this.$router.go(-1); // Go back to the previous page
+  } else {
+    this.$router.push('/homeuser'); // Fallback to the home user page
+  }
+}
     }
 };
 </script>
