@@ -3,31 +3,32 @@
 <template>
     <div id="quiz-app" class="quiz-app-container">
         <div v-if="loading">Loading quiz...</div>
-
+  
         <div v-else-if="alreadyTaken">
             <h1>OOPS...</h1>
             <p>You have already taken this quiz!</p>
             <button @click="goBack" class="reset-btn">Go back to Home page</button>
         </div>
-
+  
         <div v-else-if="!quizData.length">
             <p>Quiz not found or no questions available!</p>
         </div>
     
-
+  
         <div v-else>
             <div class="quiz-container">
-
-
+  
+  
                 <div v-if="currentQuestion < quizData.length" class="question-box">
                     <div class="question-header">
                         <h3>Question {{ currentQuestion + 1 }}/{{ quizData.length }}</h3>
+                        <!-- <p class="timer" :style="{ color: timer <= 5 ? '#ff5e7d' : '#fff' }">Time left: {{ timer }}</p> -->
                         <p class="timer">Time left: {{ timer }}</p>
                     </div>
                 
                     <!-- Hide question, options, and validate button if answered -->
                     <p v-if="!isAnswered" class="question">{{ currentQuestionData.question }}</p>
-
+  
                     <div v-if="!isAnswered" class="options">
                         <button 
                             v-for="(option, index) in currentQuestionData.options" 
@@ -38,7 +39,7 @@
                             {{ option }}
                         </button>
                     </div>
-
+  
                     <button 
                     v-if="!isAnswered" 
                     @click="validateAnswer" 
@@ -47,7 +48,7 @@
                     >
                     Validate
                     </button>
-
+  
                     <!-- Feedback Message (only show after answering) -->
                     <div v-if="isAnswered" class="answer-feedback">
                         <p v-if="isAnswerCorrect" class="correct">Correct!</p>
@@ -55,11 +56,11 @@
                         <button @click="nextQuestion" class="next-btn">Next Question</button>
                     </div>
                 </div>
-
-
-
-
-
+  
+  
+  
+  
+  
                 <div v-else class="results">
                     <h2>Quiz Completed!</h2>
                     <p>Your Score: {{ score }}/{{ quizData.length }}</p>
@@ -80,23 +81,23 @@
                     </div>
                     <button @click="goBack" class="reset-btn">Go back to Home page</button>
                 </div>
-
-
+  
+  
             </div>
         </div>
     
     </div>
-
-</template>
   
-
-
-<script>
-
+  </template>
+  
+  
+  
+  <script>
+  
   import firebase from "firebase/app";
   import "firebase/firestore"; // make sure this is imported
   import { app as db } from "@/Firebase/config.js";
-
+  
   import { getUser } from "@/Firebase/Authentification/getUser.js";
   
   export default {
@@ -107,12 +108,12 @@
                 this.loading = false;
                 return;
             }
-
+  
             try {
                 const userRef = db.collection("users").doc(currentUser.uid);
                 const userSnap = await userRef.get();
                 const userData = userSnap.data();
-
+  
                 const alreadyPassed = userData.quizzes?.some(q => q.quizId === this.id);
                 if (alreadyPassed) {
                     this.alreadyTaken = true;
@@ -121,13 +122,13 @@
                     //alert("You have already taken this quiz.");
                     return;
                 }
-
+  
                 await this.fetchQuizData();
             } catch (error) {
                 console.error("Error checking quiz attempt:", error);
                 this.loading = false;
             }
-},
+  },
     props: {
       id: {
         type: String,
@@ -151,6 +152,7 @@
             startTime: null,
             endTime: null,
             alreadyTaken: false,
+            quizname: '',
         };
     },
     methods: {
@@ -158,9 +160,10 @@
             try {
             const quizRef = db.collection("quizzes").doc(this.id);
             const quizSnap = await quizRef.get();
-
+  
             if (quizSnap.exists) {
                 const quiz = quizSnap.data();
+                this.quizname = quiz.title;
                 this.quizData = quiz.questions.map((q) => ({
                 question: q.question,
                 options: q.options,
@@ -180,17 +183,32 @@
                 this.startTime = Date.now();
                 this.startTimer();
             },
+            // startTimer() {
+            //     this.timer = 10;
+            //     clearInterval(this.timerInterval);
+            //     this.timerInterval = setInterval(() => {
+            //     if (this.timer > 0 && !this.isAnswered) {
+            //         this.timer--;
+            //     } else {
+            //         this.validateAnswer();
+            //     }
+            //     }, 1000);
+            // },
             startTimer() {
-                this.timer = 10;
-                clearInterval(this.timerInterval);
-                this.timerInterval = setInterval(() => {
-                if (this.timer > 0 && !this.isAnswered) {
-                    this.timer--;
-                } else {
-                    this.validateAnswer();
-                }
-                }, 1000);
-            },
+      this.timer = 10;
+      clearInterval(this.timerInterval);
+      this.timerInterval = setInterval(() => {
+          if (this.timer > 0 && !this.isAnswered) {
+              this.timer--;
+          } else if (!this.isAnswered) {
+              clearInterval(this.timerInterval);  // Clear interval when time's up
+              setTimeout(() => {
+                  this.validateAnswer(); // Delay the validation by 1 second
+              }, 1000);
+          }
+      }, 1000);
+  }
+  ,
             selectOption(option) {
                 if (!this.isAnswered) {
                 this.selectedOption = option;
@@ -225,7 +243,7 @@
                     this.endTime = Date.now();
                     this.saveUserQuizResult(); // Save result to Firebase
                 }
-
+  
             },
             goBack() {
                 this.$router.push('/homeuser');
@@ -237,68 +255,68 @@
                     console.error("User not authenticated.");
                     return;
                     }
-
+  
                     const duration = Math.floor((this.endTime - this.startTime) / 1000); // seconds
                     const quizResult = {
                     userId: currentUser.uid,
                     score: this.score,
                     total: this.quizData.length,
-                    timeSpent: duration,
+                    // timeSpent: duration,
                     date: new Date().toISOString(),
                     };
-
+  
                     // 1. Save to user's document
                     const userRef = db.collection("users").doc(currentUser.uid);
                     await userRef.update({
                     quizzes: firebase.firestore.FieldValue.arrayUnion({
-                        //quizname : quiz.title, 
+                        quizname : this.quizname, 
                         quizId: this.id,
                         ...quizResult
                     }),
                     });
-
+  
                     // 2. Save to quiz's document (add participant)
                     const quizRef = db.collection("quizzes").doc(this.id);
                     await quizRef.set({
                     participants: firebase.firestore.FieldValue.arrayUnion(quizResult)
                     }, { merge: true });
-
+  
                     console.log("✅ Quiz result saved to both user and quiz documents.");
                 } catch (error) {
                     console.error("❌ Error saving quiz result:", error);
                 }
                 }
-
-
-
+  
+  
+  
             },
             computed: {
                 currentQuestionData() {
                     return this.quizData[this.currentQuestion];
                 },
             },
-
+  
             beforeUnmount() {
                 clearInterval(this.timerInterval);
             },
     };
-
-</script>
-
-
-<style>
- /* Main container styling */
-.quiz-app-container {
+  
+  </script>
+  
+  
+  <style>
+  /* Main container styling */
+  .quiz-app-container {
   position: relative;
   min-height: 100vh;
   background-color: #1e1e2f;
   color: white;
   padding: 100px 2rem 4rem; /* Increased bottom padding */
   box-sizing: border-box;
-}
-
-/* Quiz container */
-.quiz-container {
+  }
+  
+  /* Quiz container */
+  .quiz-container {
   max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
@@ -307,50 +325,50 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
-}
-
-/* Question box */
-.question-box {
+  }
+  
+  /* Question box */
+  .question-box {
   margin-bottom: 2rem;
-}
-
-.question-header {
+  }
+  
+  .question-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.question-header h3 {
+  }
+  
+  .question-header h3 {
   margin: 0;
   font-size: 1.2rem;
   color: rgba(255, 255, 255, 0.9);
-}
-
-.timer {
+  }
+  
+  .timer {
   font-size: 1rem;
   color: #ff5e7d;
   font-weight: 500;
-}
-
-.question {
+  }
+  
+  .question {
   font-size: 1.3rem;
   line-height: 1.5;
   margin-bottom: 2rem;
   color: white;
-}
-
-/* Options grid */
-.options {
+  }
+  
+  /* Options grid */
+  .options {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
   margin-bottom: 2rem;
-}
-
-.options button {
+  }
+  
+  .options button {
   padding: 1rem;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
@@ -364,23 +382,23 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-}
-
-.options button:hover {
+  }
+  
+  .options button:hover {
   background: rgba(255, 255, 255, 0.15);
   transform: translateY(-2px);
-}
-
-.options .selected {
+  }
+  
+  .options .selected {
   background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
   border-color: transparent;
   box-shadow: 0 4px 15px rgba(255, 45, 95, 0.3);
-}
-
-/* Buttons */
-.validate-btn,
-.next-btn,
-.reset-btn {
+  }
+  
+  /* Buttons */
+  .validate-btn,
+  .next-btn,
+  .reset-btn {
   display: block;
   width: 100%;
   max-width: 300px;
@@ -392,160 +410,160 @@
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
-}
-
-.validate-btn {
+  }
+  
+  .validate-btn {
   background: linear-gradient(135deg, #8a8aff 0%, #5757ff 100%);
   color: white;
-}
-
-.validate-btn:hover {
+  }
+  
+  .validate-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(100, 108, 255, 0.4);
-}
-
-.validate-btn:disabled {
+  }
+  
+  .validate-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none !important;
   box-shadow: none !important;
-}
-
-.next-btn {
+  }
+  
+  .next-btn {
   background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
   color: white;
-}
-
-.next-btn:hover {
+  }
+  
+  .next-btn:hover {
   background: linear-gradient(135deg, #388e3c 0%, #4caf50 100%);
   transform: translateY(-2px);
-}
-
-.reset-btn {
+  }
+  
+  .reset-btn {
   background: linear-gradient(135deg, #ff5e7d 0%, #ff2d5f 100%);
   color: white;
   margin-top: 2rem;
-}
-
-.reset-btn:hover {
+  }
+  
+  .reset-btn:hover {
   background: linear-gradient(135deg, #ff2d5f 0%, #ff5e7d 100%);
   transform: translateY(-2px);
-}
-
-/* Feedback section */
-.answer-feedback {
+  }
+  
+  /* Feedback section */
+  .answer-feedback {
   margin: 2rem 0;
   padding: 1.5rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 8px;
   text-align: center;
-}
-
-.correct-feedback {
+  }
+  
+  .correct-feedback {
   color: #4caf50;
   font-size: 1.2rem;
   font-weight: 500;
   margin-bottom: 1rem;
-}
-
-.incorrect-feedback {
+  }
+  
+  .incorrect-feedback {
   color: #f44336;
   font-size: 1.2rem;
   font-weight: 500;
   margin-bottom: 1rem;
-}
-
-.correct-answer {
+  }
+  
+  .correct-answer {
   color: rgba(255, 255, 255, 0.8);
   margin-bottom: 1.5rem;
-}
-
-/* Results section */
-.results {
+  }
+  
+  /* Results section */
+  .results {
   text-align: center;
-}
-
-.results h2 {
+  }
+  
+  .results h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
   color: #ff5e7d;
-}
-
-.results p {
+  }
+  
+  .results p {
   font-size: 1.25rem;
   margin-bottom: 1.5rem;
-}
-
-.summary {
+  }
+  
+  .summary {
   margin: 2rem 0;
   text-align: left;
   background: rgba(255, 255, 255, 0.05);
   padding: 1.5rem;
   border-radius: 8px;
-}
-
-.summary h3 {
+  }
+  
+  .summary h3 {
   margin-top: 0;
   color: rgba(255, 255, 255, 0.9);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding-bottom: 0.5rem;
-}
-
-.summary ul {
+  }
+  
+  .summary ul {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.summary li {
+  }
+  
+  .summary li {
   margin-bottom: 1.5rem;
   padding-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.summary li:last-child {
+  }
+  
+  .summary li:last-child {
   margin-bottom: 0;
   padding-bottom: 0;
   border-bottom: none;
-}
-
-.summary strong {
+  }
+  
+  .summary strong {
   color: rgba(255, 255, 255, 0.9);
-}
-
-.user-answer.correct {
+  }
+  
+  .user-answer.correct {
   color: #4caf50;
-}
-
-.user-answer.incorrect {
+  }
+  
+  .user-answer.incorrect {
   color: #f44336;
-}
-
-.correct-answer-label {
+  }
+  
+  .correct-answer-label {
   color: rgba(255, 255, 255, 0.7);
-}
-
-/* Already taken section */
-.already-taken {
+  }
+  
+  /* Already taken section */
+  .already-taken {
   text-align: center;
   max-width: 500px;
   margin: 0 auto;
-}
-
-.already-taken h1 {
+  }
+  
+  .already-taken h1 {
   color: #ff5e7d;
   font-size: 2.5rem;
   margin-bottom: 1rem;
-}
-
-.already-taken p {
+  }
+  
+  .already-taken p {
   font-size: 1.2rem;
   margin-bottom: 2rem;
   color: rgba(255, 255, 255, 0.8);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
   .quiz-app-container {
     padding: 80px 1.5rem 3rem;
   }
@@ -572,9 +590,9 @@
     font-size: 1rem;
     padding: 0.9rem;
   }
-}
-
-@media (max-width: 480px) {
+  }
+  
+  @media (max-width: 480px) {
   .quiz-app-container {
     padding: 70px 1rem 2rem;
   }
@@ -588,5 +606,5 @@
   .timer {
     align-self: flex-end;
   }
-}
-</style>
+  }
+  </style>

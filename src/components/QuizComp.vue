@@ -3,8 +3,8 @@
       <div class="thread-header">
         <h2>{{ quiz.title }}</h2>
         <p class="thread-info">
-            Posted by <router-link :to="'/profile/' + quiz.createdBy">
-                {{ quiz.createdBy || 'Loading...' }}
+            Posted by <router-link :to="'/profileadmin/' + quiz.createdBy">
+                {{ quiz.adminemail || 'Loading...' }}
             </router-link>
         </p>
 
@@ -46,15 +46,15 @@ import { getUserById } from "@/Firebase/Authentification/getUser.js";
       this.user = user;
 
     },
-    async mounted() {
-            try {
-            const userData = await getUserById(this.quiz.createdBy);
-            this.authorName = userData?.name || userData?.displayName || 'Anonymous';
-            } catch (error) {
-            console.error('Error fetching author:', error);
-            this.authorName = 'Unknown';
-            }
-    },
+    // async mounted() {
+    //         try {
+    //         const userData = await getUserById(this.quiz.createdBy);
+    //         this.authorName = userData?.name || userData?.displayName || 'Anonymous';
+    //         } catch (error) {
+    //         console.error('Error fetching author:', error);
+    //         this.authorName = 'Unknown';
+    //         }
+    // },
 
     methods: {
       async getuser(id) {

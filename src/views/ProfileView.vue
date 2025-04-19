@@ -14,7 +14,7 @@
           <p>Name: <span class="profile-detail">{{ user.displayName }}</span></p>
           <p>Email: <span class="profile-detail">{{ user.email }}</span></p>
           <p>Creation Time: <span class="profile-detail">{{ formattedDate(user.createdAt) }}</span></p>
-
+  
           <div class="update-profile">
           <button @click="toggleUpdateForm" class="update-button">Update Profile</button>
   
@@ -23,7 +23,6 @@
               <label for="name" class="form-label">Name:</label>
               <input type="text" id="name" v-model.trim="updatedName" class="form-input">
             </div>
-  
             <div class="form-group">
               <label for="email" class="form-label">Email:</label>
               <input type="email" id="email" v-model.trim="updatedEmail" class="form-input">
@@ -41,15 +40,15 @@
                 <h2>Quiz History:</h2>
                 <div class="quiz-list">
                     <div v-for="(quiz, index) in user.quizzes" :key="index" class="quiz-item">
-
+  
                        
-
+  
                         <RouterLink :to="`/quiz/${quiz.quizId}`" class="quiz-link">
-                            Quiz ID: {{ quiz.quizId }}
+                            Quiz Name: {{ quiz.quizname }}
                         </RouterLink>
                         <p>Score: {{ quiz.score }} / {{ quiz.total }}</p>
                         <p>Date: {{ formatQuizDate(quiz.date) }}</p>
-                        <p>Time Spent: {{ formatTime(quiz.timeSpent) }}</p>
+                        <!-- <p>Time Spent: {{ formatTime(quiz.timeSpent) }}</p> -->
                     </div>
                 </div>
             </div>
@@ -64,11 +63,9 @@
   
   
   <script>
-  //import ListThread from '@/components/DiscussionList.vue';
-    import { getUserById, updateUserProfile } from '@/Firebase/Authentification/getUser';
-  //import { getThreadsByIds } from '@/Firebase/firestore/getDisc.js';
-    import { getDoc, doc } from 'firebase/firestore';
-    import { app as db } from '@/Firebase/config.js'; // adjust the path if needed
+  import { getCurrentUserId, getUserById, updateUserProfile } from '@/Firebase/Authentification/getUser';
+  import { getDoc, doc } from 'firebase/firestore';
+  import { app as db } from '@/Firebase/config.js'; // adjust the path if needed
   
   export default {
     name: 'ProfileView',
@@ -76,7 +73,7 @@
     data() {
       return {
         user: null,
-        threads: [],
+        quizzes: [],
         updatedName: '',
         updatedEmail: '',
         showUpdateForm: false,
@@ -86,52 +83,79 @@
     methods: {
         
         goToHome() {
-        if (window.history.length > 1) {
-            this.$router.go(-1); // Go back to the previous page
-        } else {
-            this.$router.push('/homeuser'); // Fallback to the home user page
-        }
-        },
-        async updateProfile() {
-        try {
-        const userId = this.$route.params.id;
-        await updateUserProfile(userId, {
-            displayName: this.updatedName,
-            email: this.updatedEmail
-        });
-        alert('Profile updated successfully!');
-        } catch (error) {
-        console.error('Error updating profile:', error.code || error.message || error);
-        alert('Failed to update profile. Please try again.');
-        }
-        },
+  if (window.history.length > 1) {
+    this.$router.go(-1); // Go back to the previous page
+  } else {
+    this.$router.push('/homeuser'); // Fallback to the home user page
+  }
+  },
+  // async updateProfile() {
+  //     try {
+  //         const userId = this.$route.params.id;
+  //         await updateUserProfile(userId, {
+  //             displayName: this.updatedName,
+  //             email: this.updatedEmail
+  //         });
   
-        toggleUpdateForm() {
-            this.showUpdateForm = !this.showUpdateForm;
-            if (this.showUpdateForm && this.user) {
-            this.updatedName = this.user.displayName || '';
-            this.updatedEmail = this.user.email || '';
-            }
-        },
-
+  //         // Update local state
+  //         if (this.updatedName) this.user.displayName = this.updatedName;
+  //         if (this.updatedEmail) this.user.email = this.updatedEmail;
+  
+  //         this.showUpdateForm = false;
+  //         alert('Profile updated successfully!');
+  //     } catch (error) {
+  //         console.error('Error updating profile:', error.message);
+  //         alert('Failed to update profile. Please try again.');
+  //     }
+  // },
+  
+  async updateProfile() {
+      try {
+          const userId = this.$route.params.id; // Assumes route param contains the userId
+          await updateUserProfile(userId, {
+              displayName: this.updatedName,
+              email: this.updatedEmail
+          });
+  
+          // Update local state
+          if (this.updatedName) this.user.displayName = this.updatedName;
+          if (this.updatedEmail) this.user.email = this.updatedEmail;
+  
+          this.showUpdateForm = false;
+          alert('Profile updated successfully!');
+      } catch (error) {
+          console.error('Error updating profile:', error.message);
+          alert('Failed to update profile. Please try again.');
+      }
+  },
+      toggleUpdateForm() {
+        this.showUpdateForm = !this.showUpdateForm;
+        if (this.showUpdateForm && this.user) {
+          this.updatedName = this.user.displayName || '';
+          this.updatedEmail = this.user.email || '';
+        }
+      },
+      //formattedDate(date) {
+      //  return date instanceof Date ? date.toLocaleString() : date;
+      //},
+  
       formattedDate(date) {
         if (!date) return '';
         const d = typeof date === 'string' ? new Date(date) : date;
         return d.toLocaleString();
         },
-
+  
         formatQuizDate(dateStr) {
-            const date = new Date(dateStr);
-            return date.toLocaleString();
-            },
-
-        formatTime(ms) {
-        if (!ms) return 'N/A';
-        const seconds = Math.floor(ms / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const remainingSeconds = seconds % 60;
-        return `${minutes}m ${remainingSeconds}s`;
-        },
+          const date = new Date(dateStr);
+          return date.toLocaleString();
+          },
+          // formatTime(ms) {
+          // if (!ms) return 'N/A';
+          // const seconds = Math.floor(ms / 1000);
+          // const minutes = Math.floor(seconds / 60);
+          // const remainingSeconds = seconds % 60;
+          // return `${minutes}m ${remainingSeconds}s`;
+          // },
       
     },
     async created() {
@@ -143,9 +167,7 @@
             this.user.createdAt = this.user.createdAt.toDate();
           }
   
-          const { posts, load } = await getThreadsByIds(this.user.threads || []);
-          await load();
-          this.threads = posts.value;
+          this.quizzes = this.quizzes.value;
         } else {
           console.error('User not found.');
         }
@@ -153,26 +175,26 @@
         console.error('Error fetching user:', error);
       }
     },
-
-
-
-/*mounted() {
+  
+  
+  
+  /*mounted() {
     this.user.quizzes.forEach(quiz => {
       this.fetchQuizName(quiz.quizId);
     });
   }*/
-
-
-
-
+  
+  
+  
+  
   };
-
-
+  
+  
   </script>
   
   <style scoped>
-
-.home-button {
+  
+  .home-button {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -194,7 +216,7 @@
     transform: translateX(-3px);
   }
   
-
+  
   .padding-container {
     padding: 2rem;
     position: relative;
@@ -242,7 +264,7 @@
     color: rgba(255, 255, 255, 0.8);
   }
   
-  .threads-section {
+  .quizzes-section {
     background: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(10px);
     padding: 2rem;
@@ -252,7 +274,7 @@
     border: 1px solid rgba(255, 255, 255, 0.1);
   }
   
-  .threads-section h2 {
+  .quizzes-section h2 {
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     color: white;
@@ -360,7 +382,7 @@
     }
     
     .profile-header,
-    .threads-section,
+    .quizzes-section,
     .update-form {
       padding: 1.5rem;
     }
@@ -371,7 +393,7 @@
       filter: blur(60px);
     }
   }
-
+  
   .quiz-history {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
@@ -380,29 +402,29 @@
   margin-bottom: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.quiz-history h2 {
+  }
+  
+  .quiz-history h2 {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
   background: linear-gradient(to right, #FF8A00, #E52E71);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-.quiz-item {
+  }
+  
+  .quiz-item {
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
   border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
-}
-
-.quiz-item p {
+  }
+  
+  .quiz-item p {
   margin: 0.3rem 0;
   font-size: 1rem;
   color: rgba(255, 255, 255, 0.9);
-}
-.quiz-history-section {
+  }
+  .quiz-history-section {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
   padding: 2rem;
@@ -410,9 +432,9 @@
   margin-bottom: 2rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.quiz-history-section h2 {
+  }
+  
+  .quiz-history-section h2 {
   font-size: 1.8rem;
   margin-bottom: 1.5rem;
   color: white;
@@ -420,37 +442,37 @@
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-}
-
-.quiz-list {
+  }
+  
+  .quiz-list {
   list-style: none;
   padding: 0;
   margin: 0;
-}
-
-.quiz-item {
+  }
+  
+  .quiz-item {
   margin-bottom: 1.5rem;
   background-color: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.quiz-link {
+  }
+  
+  .quiz-link {
   font-weight: bold;
   color: #fd729e;
   text-decoration: none;
-}
-
-.quiz-link:hover {
+  }
+  
+  .quiz-link:hover {
   text-decoration: underline;
-}
-
-.update-button {
+  }
+  
+  .update-button {
   margin-right: 10px; /* Adds space between buttons */
-}
-
-.cancel-button {
+  }
+  
+  .cancel-button {
   margin-left: 10px; /* Optional: Adds space specifically for the Cancel button */
-}
+  }
   </style>

@@ -16,7 +16,7 @@
         
         <div v-else-if="quizzes.length === 0" class="empty-state">
           <p>No quizzes created yet.</p>
-          <router-link to="/create-quiz" class="cta-button">Create Your First Quiz</router-link>
+          <router-link to="/create" class="cta-button">Create Your First Quiz</router-link>
         </div>
         
         <ul v-else class="quizzes-list">
@@ -195,7 +195,10 @@
     padding: 2rem;
     color: rgba(255, 255, 255, 0.7);
   }
-  
+ 
+  .quiz-info a {
+    text-decoration: none ;
+  }
   .quizzes-list {
     list-style: none;
     padding: 0;
