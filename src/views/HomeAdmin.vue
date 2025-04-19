@@ -21,8 +21,10 @@
         
         <ul v-else class="quizzes-list">
           <li v-for="quiz in quizzes" :key="quiz.id" class="quiz-item">
+            
+
             <div class="quiz-info">
-              <h3 class="quiz-title">{{ quiz.title }}</h3>
+              <router-link :to="`/quizadmin/${quiz.id}`" ><h3 class="quiz-title">{{ quiz.title }}</h3></router-link>
               <div class="quiz-meta">
                 <span class="quiz-category">{{ quiz.category }}</span>
                 <span class="quiz-difficulty">Difficulty: {{ quiz.difficulty }}</span>
@@ -33,6 +35,8 @@
               <button @click="editQuiz(quiz.id)" class="action-button edit">Edit</button>
               <button @click="deleteQuiz(quiz.id)" class="action-button delete">Delete</button>
             </div>
+
+            
           </li>
         </ul>
       </div>
@@ -226,6 +230,11 @@
     font-size: 1.25rem;
     margin-bottom: 0.5rem;
     color: white;
+
+  }
+
+  .quiz-title a {
+    text-decoration : none 
   }
   
   .quiz-meta {

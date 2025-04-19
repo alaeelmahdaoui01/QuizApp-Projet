@@ -36,25 +36,6 @@
         </div>
   
         
-        <div class="quiz-history">
-            <div class="quiz-history-section" v-if="user.quizzes && user.quizzes.length > 0">
-                <h2>Quiz History:</h2>
-                <div class="quiz-list">
-                    <div v-for="(quiz, index) in user.quizzes" :key="index" class="quiz-item">
-
-                       
-
-                        <RouterLink :to="`/quiz/${quiz.quizId}`" class="quiz-link">
-                            Quiz ID: {{ quiz.quizId }}
-                        </RouterLink>
-                        <p>Score: {{ quiz.score }} / {{ quiz.total }}</p>
-                        <p>Date: {{ formatQuizDate(quiz.date) }}</p>
-                        <p>Time Spent: {{ formatTime(quiz.timeSpent) }}</p>
-                    </div>
-                </div>
-            </div>
-            <div v-else>No quizzes taken yet.</div>
-        </div>
   
         
       </div>

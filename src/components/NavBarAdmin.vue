@@ -9,7 +9,7 @@
         </div>
         <div class="usermenu">
           <!-- Use optional chaining to prevent errors when user is null -->
-          <router-link :to="'/profile/' + user?.uid" class="username">
+          <router-link :to="'/profileadmin/' + user?.uid" class="username">
             <img :src="defaultPhoto" class="userphoto" />
           </router-link>
           <button class="button" @click="leave">Sign out</button>
