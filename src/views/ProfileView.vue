@@ -15,8 +15,9 @@
           <p>Email: <span class="profile-detail">{{ user.email }}</span></p>
           <p>Creation Time: <span class="profile-detail">{{ formattedDate(user.createdAt) }}</span></p>
   
-          <div class="update-profile">
-          <button @click="toggleUpdateForm" class="update-button">Update Profile</button>
+          <div class="update-profile" v-if="currentUserId === userId">
+  <button @click="toggleUpdateForm" class="update-button">Update Profile</button>
+
   
           <div v-if="showUpdateForm" class="update-form">
             <div class="form-group">
@@ -77,7 +78,8 @@
         updatedName: '',
         updatedEmail: '',
         showUpdateForm: false,
-        //quizNames: {},
+        isCurrent: false,
+        userId : this.$route.params.id,
       };
     },
     methods: {
@@ -89,26 +91,7 @@
     this.$router.push('/homeuser'); // Fallback to the home user page
   }
   },
-  // async updateProfile() {
-  //     try {
-  //         const userId = this.$route.params.id;
-  //         await updateUserProfile(userId, {
-  //             displayName: this.updatedName,
-  //             email: this.updatedEmail
-  //         });
-  
-  //         // Update local state
-  //         if (this.updatedName) this.user.displayName = this.updatedName;
-  //         if (this.updatedEmail) this.user.email = this.updatedEmail;
-  
-  //         this.showUpdateForm = false;
-  //         alert('Profile updated successfully!');
-  //     } catch (error) {
-  //         console.error('Error updating profile:', error.message);
-  //         alert('Failed to update profile. Please try again.');
-  //     }
-  // },
-  
+
   async updateProfile() {
       try {
           const userId = this.$route.params.id; // Assumes route param contains the userId
@@ -160,8 +143,13 @@
     },
     async created() {
       try {
+
         const userId = this.$route.params.id;
         this.user = await getUserById(userId);
+        this.currentUserId = getCurrentUserId();
+        //isCurrent = this.currentUserId === this.$route.params.id ; 
+                console.log(this.currentUserId === this.$route.params.id) 
+
         if (this.user) {
           if (this.user.createdAt?.toDate) {
             this.user.createdAt = this.user.createdAt.toDate();

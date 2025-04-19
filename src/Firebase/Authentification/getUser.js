@@ -106,5 +106,16 @@ const updateUserProfile = async(userId, { displayName, email }) => {
 
 };
 
+const getCurrentUserId = () => {
+    const user = auth.currentUser;
 
-export { getUser, isLogged, waitForAuthInit, observeUserState, getUserById, updateUserProfile };
+    if (user) {
+        return user.uid;
+
+    } else {
+        console.warn("No user is currently logged in.");
+        return null;
+    }
+}
+
+export { getUser, isLogged, waitForAuthInit, observeUserState, getUserById, updateUserProfile, getCurrentUserId };
