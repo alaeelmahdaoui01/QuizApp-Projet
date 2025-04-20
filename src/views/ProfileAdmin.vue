@@ -48,8 +48,8 @@
   //import ListThread from '@/components/DiscussionList.vue';
     import { getUserById, updateUserProfile, getCurrentUserId } from '@/Firebase/Authentification/getUser';
   //import { getThreadsByIds } from '@/Firebase/firestore/getDisc.js';
-    import { getDoc, doc } from 'firebase/firestore';
-    import { app as db } from '@/Firebase/config.js'; // adjust the path if needed
+    //import { getDoc, doc } from 'firebase/firestore';
+    //import { app as db } from '@/Firebase/config.js'; // adjust the path if needed
   
   export default {
     name: 'ProfileView',
@@ -127,9 +127,9 @@
             this.user.createdAt = this.user.createdAt.toDate();
           }
   
-          const { posts, load } = await getThreadsByIds(this.user.threads || []);
-          await load();
-          this.threads = posts.value;
+          //const { posts, load } = await getThreadsByIds(this.user.threads || []);
+          //await load();
+          //this.threads = posts.value;
         } else {
           console.error('User not found.');
         }

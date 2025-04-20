@@ -65,8 +65,8 @@
   
   <script>
   import { getCurrentUserId, getUserById, updateUserProfile } from '@/Firebase/Authentification/getUser';
-  import { getDoc, doc } from 'firebase/firestore';
-  import { app as db } from '@/Firebase/config.js'; // adjust the path if needed
+  //import { getDoc, doc } from 'firebase/firestore';
+  //import { app as db } from '@/Firebase/config.js'; // adjust the path if needed
   
   export default {
     name: 'ProfileView',

@@ -12,7 +12,7 @@
   <script>
   import firebase from 'firebase/app'
   import 'firebase/auth'
-  import {projectFirestore} from "../Firebase/config.js"
+  import {app} from "../Firebase/config.js"
   
   export default {
     name: "SignupForm",
@@ -32,7 +32,7 @@
       const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.email, this.password);
       const result = createUser;
       
-      const dataBase = projectFirestore.collection("users").doc(result.user.uid);
+      const dataBase = app.collection("users").doc(result.user.uid);
       this.error = "";
   
       await dataBase.set({

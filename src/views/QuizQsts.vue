@@ -256,7 +256,7 @@
                     return;
                     }
   
-                    const duration = Math.floor((this.endTime - this.startTime) / 1000); // seconds
+                    //const duration = Math.floor((this.endTime - this.startTime) / 1000); // seconds
                     const quizResult = {
                     userId: currentUser.uid,
                     score: this.score,

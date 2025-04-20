@@ -31,7 +31,7 @@
   <script>
 
 import { getUser } from "@/Firebase/Authentification/getUser.js";
-import { getUserById } from "@/Firebase/Authentification/getUser.js";
+//import { getUserById } from "@/Firebase/Authentification/getUser.js";
 
   export default {
     name: 'QuizComp',
