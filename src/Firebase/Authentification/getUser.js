@@ -40,28 +40,7 @@ const getUserById = async(uid) => {
     const res = await app.collection('users').doc(uid).get();
     return res.data();
 };
-// ✅ Add this
-// const updateUserProfile = async(userId, { displayName, email }) => {
-//     const currentUser = auth.currentUser;
-//     if (!currentUser || currentUser.uid !== userId) {
-//         alert("Unauthorized or invalid user.");
-//         throw new Error("Unauthorized or invalid user.");
-//     }
 
-//     if (displayName && currentUser.displayName !== displayName) {
-//         await updateProfile(currentUser, { displayName });
-//     }
-
-//     if (email && currentUser.email !== email) {
-//         await updateEmail(currentUser, email);
-//     }
-
-//     // Optionally update Firestore too:
-//     await app.collection('users').doc(userId).update({
-//         displayName,
-//         email
-//     });
-// };
 
 const updateUserProfile = async(userId, { displayName, email }) => {
     const currentUser = auth.currentUser;
