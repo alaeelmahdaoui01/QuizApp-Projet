@@ -15,7 +15,7 @@
           <p>Email: <span class="profile-detail">{{ user.email }}</span></p>
           <p>Creation Time: <span class="profile-detail">{{ formattedDate(user.createdAt) }}</span></p>
 
-          <div class="update-profile" >
+          <div class="update-profile" v-if="currentUserId === userId">
             <button @click="toggleUpdateForm" class="update-button">Update Profile</button>
   
           <div v-if="showUpdateForm" class="update-form">

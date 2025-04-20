@@ -1,10 +1,13 @@
 <template>
   <div class="admin-container">
     <NavBarAdmin :user="user" />
+
+
     <main class="content-wrapper">
       <div class="quizzes-container">
-        <h2>Your Quizzes</h2>
         
+        <h2>Your Quizzes</h2>
+        <input v-model="searchQuery" type="text" placeholder="Search quizzes by title..." class="search-bar" />
         <div v-if="loading" class="loading-state">
           <div class="loading-spinner"></div>
           <p>Loading quizzes...</p>
@@ -20,7 +23,8 @@
         </div>
         
         <ul v-else class="quizzes-list">
-          <li v-for="quiz in quizzes" :key="quiz.id" class="quiz-item">
+            <li v-for="quiz in filteredQuizzes" :key="quiz.id" class="quiz-item">
+
             
 
             <div class="quiz-info">
@@ -66,7 +70,9 @@
     user: null,
     quizzes: [],
     loading: true,
-    error: null
+    error: null,
+    searchQuery: '',  // <-- added this
+
       };
     },
 
@@ -119,11 +125,37 @@
   this.$router.push({ name: 'EditQuiz', params: { id: quizId } });
 }
     },
+    computed: {
+  filteredQuizzes() {
+    if (!this.searchQuery) return this.quizzes;
+    const query = this.searchQuery.toLowerCase();
+    return this.quizzes.filter(quiz =>
+      quiz.title.toLowerCase().includes(query)
+    );
+  },
+},
+
   };
   </script>
   
 
   <style scoped>
+  .search-bar {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  outline: none;
+}
+
+.search-bar::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
   .admin-container {
     position: relative;
     min-height: 100vh;

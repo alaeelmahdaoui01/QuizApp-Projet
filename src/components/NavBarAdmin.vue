@@ -5,7 +5,7 @@
         <div class="buttons-container">
           <router-link to="/homeadmin" class="button">Home</router-link>
           <router-link to="/create" class="button">Create</router-link>
-          
+          <router-link to="/leaderboard" class="button">LeaderBoard</router-link>
         </div>
         <div class="usermenu">
           <!-- Use optional chaining to prevent errors when user is null -->

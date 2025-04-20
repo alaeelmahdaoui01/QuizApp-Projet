@@ -7,7 +7,7 @@
               <line x1="19" y1="12" x2="5" y2="12"></line>
               <polyline points="12 19 5 12 12 5"></polyline>
             </svg>
-            Return to Home page
+            Return
           </button>
           <h2 class="section-title">🏆 Quiz Leaderboard</h2>
         </div>
@@ -52,9 +52,9 @@
     },
     methods: {
       goToHome() {
-        this.$router.push('/homeuser');
-      }
-    },
+        this.$router.go(-1); // Go back to the previous page
+  
+    },},
    
     async mounted() {
   const usersRef = firebase.firestore().collection("users");
