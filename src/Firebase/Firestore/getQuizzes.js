@@ -9,7 +9,7 @@ const getQuizzes = () => {
         try {
             const res = await app
                 .collection('quizzes')
-                .orderBy('createdAt', 'desc') // 📌 Order by newest first
+                .orderBy('createdAt', 'desc') // Order by newest first
                 .get();
 
             quizzes.value = res.docs.map(doc => ({
