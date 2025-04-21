@@ -1,4 +1,12 @@
 # project-quiz
+Lien de deploiement du projet : 
+
+
+Ce projet a été réalisé par : 
+- Lekbiri Khadija
+- El Mahdaoui Alae
+- El Iamani Nour El Houda 
+
 
 ## Project setup
 ```
